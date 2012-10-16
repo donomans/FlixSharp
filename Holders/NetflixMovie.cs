@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class NetflixMovie
+    public class Movie
     {
         public TitleExpansion RecordType { get; set; }
 
@@ -16,13 +16,15 @@ namespace FlixSharp.Holders
         public String ShortTitle { get; set; }
         public String Title { get; set; }
         public Int32 Year { get; set; }
+        public MpaaRating MpaaRating { get; set; }
         public Single AverageRating { get; set; }
         public String BoxArtUrlSmall { get; set; }
         public String BoxArtUrlLarge { get; set; }
         #endregion
 
         #region Expanded
-        public NetflixMovies SimilarTitles { get; set; } ///not sure on this yet
+        public Movies SimilarTitles { get; set; } ///not sure on this yet
+        public People
         #endregion
 
         #region Full
@@ -37,4 +39,12 @@ namespace FlixSharp.Holders
         Full = 4
     }
 
+    public enum MpaaRating
+    {
+        Unrated,
+        R,
+        PG13,
+        PG,
+        G
+    }
 }

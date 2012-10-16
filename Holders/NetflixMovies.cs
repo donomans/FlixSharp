@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class NetflixMovies : IEnumerable<NetflixMovie>
+    public class Movies : IEnumerable<Movie>
     {
-        List<NetflixMovie> _movies = new List<NetflixMovie>();
+        List<Movie> _movies = new List<Movie>();
 
-        public IEnumerator<NetflixMovie> GetEnumerator()
+        public IEnumerator<Movie> GetEnumerator()
         {
             return _movies.GetEnumerator();
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class NetflixPerson
+    public class Person
     {
     }
 }

@@ -13,9 +13,9 @@ namespace FlixSharp
     {
         public class Login
         {
-            internal String consumerkey;
-            internal String sharedsecret;
-            internal String applicationname;
+            internal static String consumerkey;
+            internal static String sharedsecret;
+            internal static String applicationname;
 
             public Login(String ConsumerKey, String SharedSecret, String ApplicationName)
             {
@@ -56,6 +56,7 @@ namespace FlixSharp
         /// <param name="GetUserInfo"></param>
         public Netflix(GetCurrentUserNetflixUserInfo GetUserInfo = null)
         {
+            
             getuserinfo = GetUserInfo;
         }
 
@@ -67,7 +68,7 @@ namespace FlixSharp
         /// <param name="onuserbehalf">Make the request on the user's behalf if a 
         /// GetCurrentUserNetflixUserInfo delegate was provided during creation.</param>
         /// <returns></returns>
-        public NetflixMovies SearchTitle(String Title, Int32 Limit = 10, Boolean OnUserBehalf = true)
+        public Movies SearchTitle(String Title, Int32 Limit = 10, Boolean OnUserBehalf = true)
         {   
             return null;
         }
@@ -77,7 +78,7 @@ namespace FlixSharp
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public NetflixMovies GetSimilarTitles(String Id, Int32 Limit = 10, Boolean OnUserBehalf = true)
+        public Movies GetSimilarTitles(String Id, Int32 Limit = 10, Boolean OnUserBehalf = true)
         {
             return null;
         }

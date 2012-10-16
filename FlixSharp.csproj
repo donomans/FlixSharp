@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Holders\NetflixMovie.cs" />
     <Compile Include="Holders\NetflixMovies.cs" />
+    <Compile Include="Holders\NetflixPeople.cs" />
     <Compile Include="Holders\NetflixPerson.cs" />
     <Compile Include="Netflix.cs" />
     <Compile Include="Holders\NetflixAccount.cs" />
