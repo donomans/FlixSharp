@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class NetflixAccount
+    public class Account
     {
         public String Token { get; set; }
         public String TokenSecret { get; set; }

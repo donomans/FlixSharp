@@ -8,7 +8,13 @@ namespace FlixSharp.Holders
 {
     public class Movie
     {
-        public TitleExpansion RecordType { get; set; }
+        public Movie(TitleExpansion Completeness)
+        {
+            completeness = Completeness;
+        }
+
+        public TitleExpansion Completeness { get { return completeness;} }
+        public TitleExpansion completeness = TitleExpansion.Minimal;
 
         #region Basic
         public Int32 Id { get; set; }
@@ -16,27 +22,40 @@ namespace FlixSharp.Holders
         public String ShortTitle { get; set; }
         public String Title { get; set; }
         public Int32 Year { get; set; }
-        public MpaaRating MpaaRating { get; set; }
-        public Single AverageRating { get; set; }
         public String BoxArtUrlSmall { get; set; }
         public String BoxArtUrlLarge { get; set; }
+        public Single AverageRating { get; set; }
+        #endregion
+
+        #region Basic
+        public MpaaRating MpaaRating { get; set; }
+        public String Synopsis { get; set; }
+        public Int32 Length { get; set; }
+        public Single Stars { get; set; }
+        public String OfficialWebsite { get; set; }
         #endregion
 
         #region Expanded
-        public Movies SimilarTitles { get; set; } ///not sure on this yet
-        public People
+        public People Actors { get; set; }
+        public People Directors { get; set; }
         #endregion
 
         #region Full
+        public List<String> Awards { get; set; }
+        public Movies SimilarTitles { get; set; } 
+        public Movies RelatedTitles { get; set; }
         #endregion
     }
 
-    [Flags]
+    /// <summary>
+    /// Minimal, Basic, Expanded, and Complete in order of information included, from least to most.
+    /// </summary>
     public enum TitleExpansion
     {
-        Basic = 1,
-        Expanded = 2,
-        Full = 4
+        Minimal = 1,
+        Basic = 2,
+        Expanded = 4,
+        Complete = 8
     }
 
     public enum MpaaRating
@@ -47,4 +66,5 @@ namespace FlixSharp.Holders
         PG,
         G
     }
+
 }

@@ -44,6 +44,7 @@
     <Compile Include="Holders\NetflixMovies.cs" />
     <Compile Include="Holders\NetflixPeople.cs" />
     <Compile Include="Holders\NetflixPerson.cs" />
+    <Compile Include="Queries\NetflixSearch.cs" />
     <Compile Include="Netflix.cs" />
     <Compile Include="Holders\NetflixAccount.cs" />
     <Compile Include="Holders\NetflixConstants.cs" />
