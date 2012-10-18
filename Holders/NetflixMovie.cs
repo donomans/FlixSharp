@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
@@ -17,27 +18,49 @@ namespace FlixSharp.Holders
         public TitleExpansion completeness = TitleExpansion.Minimal;
 
         #region Basic
-        public Int32 Id { get; set; }
-        public Uri IdUrl { get; set; }
+        public String Id
+        {
+            get
+            {
+                if (id != "")
+                    return id;
+                else
+                {
+                    Match m = Regex.Match(IdUrl, "[0-9]{4,9}");
+                    if (m.Success)
+                    {
+                        id = m.Value;
+                        return id;
+                    }
+                    else
+                        return id;
+                }
+            }
+        }
+        private String id = "";
+        public String IdUrl { get; set; }
         public String ShortTitle { get; set; }
         public String Title { get; set; }
         public Int32 Year { get; set; }
         public String BoxArtUrlSmall { get; set; }
         public String BoxArtUrlLarge { get; set; }
-        public Single AverageRating { get; set; }
         #endregion
 
         #region Basic
-        public MpaaRating MpaaRating { get; set; }
+        public Single AverageRating { get; set; }
+        public Rating Rating { get; set; }
         public String Synopsis { get; set; }
-        public Int32 Length { get; set; }
-        public Single Stars { get; set; }
-        public String OfficialWebsite { get; set; }
+        public Int32? RunTime { get; set; }
         #endregion
 
         #region Expanded
+        public Single UserRating { get; set; }
         public People Actors { get; set; }
-        public People Directors { get; set; }
+        public People Directors { get; set; } 
+        public String OfficialWebsite { get; set; }
+        public List<String> Genres { get; set; }
+        public Format Format { get; set; }
+        public ScreenFormat ScreenFormat { get; set; }
         #endregion
 
         #region Full
@@ -47,24 +70,5 @@ namespace FlixSharp.Holders
         #endregion
     }
 
-    /// <summary>
-    /// Minimal, Basic, Expanded, and Complete in order of information included, from least to most.
-    /// </summary>
-    public enum TitleExpansion
-    {
-        Minimal = 1,
-        Basic = 2,
-        Expanded = 4,
-        Complete = 8
-    }
-
-    public enum MpaaRating
-    {
-        Unrated,
-        R,
-        PG13,
-        PG,
-        G
-    }
-
 }
+

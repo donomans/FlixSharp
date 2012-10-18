@@ -104,13 +104,36 @@ namespace FlixSharp
         
         private static GetCurrentUserNetflixUserInfo _GetUserInfo = null;
 
+        internal static Account SafeReturnUserInfo()
+        {
+            if (Netflix._GetUserInfo != null)
+            {
+                try
+                {
+                    Account na;
+                    na = Netflix._GetUserInfo();
+                    return na;
+                }
+                catch (Exception ex) 
+                {
+                }
+            }
+            return null;
+        }
+
+
+        public static void SetMethodForGettingCurrentUserAccount(GetCurrentUserNetflixUserInfo GetUserInfo)
+        {
+            _GetUserInfo = GetUserInfo;
+        }
         /// <summary>
         /// Instantiate a new Netflix client to send requests.
         /// [Note] Although GetUserInfo method is only required the first time,
         /// it may be provided in every instantiation (or can be changed for each 
         /// instantiation if so desired)
         /// </summary>
-        /// <param name="GetUserInfo"></param>
+        /// <param name="GetUserInfo">A static method that returns a Netflix Account 
+        /// (presumably for the current logged in user to make Protected requests)</param>
         public Netflix(GetCurrentUserNetflixUserInfo GetUserInfo = null)
         {
             Login.CheckInformationSet();

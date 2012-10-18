@@ -10,6 +10,11 @@ namespace FlixSharp.Holders
     {
         List<Movie> _movies = new List<Movie>();
 
+        public void AddRange(IEnumerable<Movie> movies)
+        {
+            _movies.AddRange(movies);
+        }
+
         public IEnumerator<Movie> GetEnumerator()
         {
             return _movies.GetEnumerator();
