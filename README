@@ -1,0 +1,11 @@
+﻿A C# Netflix API Wrapper for doing all major API actions
+
+OAuth Logins
+
+Search (Catalog/Title, Catalog/Autocomplete, Catalog/People)
+
+Title expansion
+
+Person expansion
+
+User actions (Add/Modify/View user details)
