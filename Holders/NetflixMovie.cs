@@ -7,17 +7,19 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class Movie
+    public class Movie : IResult
     {
         public Movie(TitleExpansion Completeness)
         {
             completeness = Completeness;
+            _Parents = new HashSet<Movies>();
         }
 
-        public TitleExpansion Completeness { get { return completeness;} }
-        public TitleExpansion completeness = TitleExpansion.Minimal;
+        public ResultType Type { get { return ResultType.Movie; } }
 
-        #region Basic
+        public TitleExpansion Completeness { get { return completeness;} }
+        public TitleExpansion completeness;
+
         public String Id
         {
             get
@@ -26,10 +28,12 @@ namespace FlixSharp.Holders
                     return id;
                 else
                 {
-                    Match m = Regex.Match(IdUrl, "[0-9]{4,9}");
+                    String[] splits = IdUrl.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+                    String newid = splits[splits.Length - 1];
+                    Match m = Regex.Match(newid, "[0-9]{5,9}");
                     if (m.Success)
                     {
-                        id = m.Value;
+                        id = newid;
                         return id;
                     }
                     else
@@ -39,34 +43,67 @@ namespace FlixSharp.Holders
         }
         private String id = "";
         public String IdUrl { get; set; }
-        public String ShortTitle { get; set; }
-        public String Title { get; set; }
-        public Int32 Year { get; set; }
-        public String BoxArtUrlSmall { get; set; }
-        public String BoxArtUrlLarge { get; set; }
+
+        #region Minimal
+            public String ShortTitle { get; set; }
+            public String Title { get; set; }
+            public Int32 Year { get; set; }
+            public String BoxArtUrlSmall { get; set; }
+            public String BoxArtUrlLarge { get; set; }
         #endregion
 
         #region Basic
-        public Single AverageRating { get; set; }
-        public Rating Rating { get; set; }
-        public String Synopsis { get; set; }
-        public Int32? RunTime { get; set; }
+            public Single AverageRating { get; set; }
+            public Rating Rating { get; set; }
+            public String Synopsis { get; set; }
+            public Int32? RunTime { get; set; }
         #endregion
 
         #region Expanded
-        public Single UserRating { get; set; }
-        public People Actors { get; set; }
-        public People Directors { get; set; } 
-        public String OfficialWebsite { get; set; }
-        public List<String> Genres { get; set; }
-        public Format Format { get; set; }
-        public ScreenFormat ScreenFormat { get; set; }
+            public Single UserRating { get; set; }
+            public People Actors { get; set; }
+            public People Directors { get; set; } 
+            public String OfficialWebsite { get; set; }
+            public List<String> Genres { get; set; }
+            public Format Format { get; set; }
+            public ScreenFormat ScreenFormat { get; set; }
         #endregion
 
-        #region Full
-        public List<String> Awards { get; set; }
-        public Movies SimilarTitles { get; set; } 
-        public Movies RelatedTitles { get; set; }
+        #region Complete
+            public List<String> Awards { get; set; }
+            public List<Movie> SimilarTitles { get; set; } 
+            public List<Movie> RelatedTitles { get; set; }
+        #endregion
+
+        #region fill
+        private async Task FillOutMovie()
+        {
+            ///take the
+            switch (completeness)
+            {
+                case TitleExpansion.Minimal:
+                    break;
+                case TitleExpansion.Basic:
+                    break;
+                case TitleExpansion.Expanded:
+                    break;
+                case TitleExpansion.Complete:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Used for lazy loading ?
+        /// -- need to think about this, as a single Movie can conceivably be part of
+        /// multiple Movies objects... is that a problem?
+        /// </summary>
+        private HashSet<Movies> _Parents { get; set; }
+        internal Movie AddParent(Movies parent)
+        {
+            if(!_Parents.Contains(parent))
+                _Parents.Add(parent);
+            return this;
+        }
         #endregion
     }
 

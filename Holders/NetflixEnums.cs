@@ -18,6 +18,13 @@ namespace FlixSharp.Holders
         Complete = 8
     }
 
+    public enum PersonExpansion
+    {
+        Minimal = 1,
+        //Expanded = 2,
+        Complete = 2
+    }
+
     public struct Rating
     {
         public Rating(String rating)
@@ -62,6 +69,7 @@ namespace FlixSharp.Holders
                     switch (r.Rating)
                     {
                         case "PG":
+                            TvRating = Holders.TvRating.PG;
                             break;
                         case "TV-14":
                             TvRating = Holders.TvRating.TV14;

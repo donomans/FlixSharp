@@ -32,12 +32,16 @@ namespace FlixSharp.Async
             return null;
         }
 
+        public static async Task<IEnumerable<Person>> GetCompletePersonDetails(XDocument doc)
+        {
+            return null;
+        }
+
         public static async Task<String> GetSynopsis(String NetflixId)
         {
             NetflixId = GetIdFromUrl(NetflixId);
-            XDocument doc = await LoadXDocumentAsync(String.Format(NetflixConstants.CatalogTitleSynopsisUrl, NetflixId));
+            XDocument doc = await LoadXDocumentAsync(String.Format(NetflixConstants.TitleSynopsisUrl, NetflixId));
             return (String)doc.Element("synopsis");
-            
         }
 
         public static String GetIdFromUrl(String NetflixIdUrl)

@@ -7,6 +7,7 @@ using FlixSharp.Constants;
 using FlixSharp.Holders;
 using FlixSharp.Queries;
 using System.Xml.Linq;
+using System.Threading.Tasks;
 
 namespace FlixSharp
 {
@@ -94,6 +95,7 @@ namespace FlixSharp
             }
         }
 
+        #region Get User Info method stuff
         /// <summary>
         /// Method to provide the current user's Netflix account Token, Token Secret, and User Id.
         /// Used for Protected Netflix API requests.  Can return null if there is no Netflix account linked
@@ -101,7 +103,6 @@ namespace FlixSharp
         /// </summary>
         /// <returns></returns>
         public delegate Account GetCurrentUserNetflixUserInfo();
-        
         private static GetCurrentUserNetflixUserInfo _GetUserInfo = null;
 
         internal static Account SafeReturnUserInfo()
@@ -120,22 +121,35 @@ namespace FlixSharp
             }
             return null;
         }
-
-
         public static void SetMethodForGettingCurrentUserAccount(GetCurrentUserNetflixUserInfo GetUserInfo)
         {
             _GetUserInfo = GetUserInfo;
         }
+        #endregion
+
+        #region On Demand Loading stuf
+        private static Boolean _FillObjectsOnDemand = true;
+        internal static Boolean FillObjectsOnDemand { get { return _FillObjectsOnDemand; } }
+        #endregion
+
         /// <summary>
         /// Instantiate a new Netflix client to send requests.
         /// [Note] Although GetUserInfo method is only required the first time,
         /// it may be provided in every instantiation (or can be changed for each 
         /// instantiation if so desired)
         /// </summary>
+        /// <param name="FillObjectsOnDemand">
+        /// FlixSharp Movie and Person objects will fill themselves upon access of fields
+        /// that are outside the current scope of information
+        /// Ex: Accessing Awards on a Movie object with a "Completeness" set at Minimal will result
+        /// in Awards being loaded on access.
+        /// </param>
         /// <param name="GetUserInfo">A static method that returns a Netflix Account 
         /// (presumably for the current logged in user to make Protected requests)</param>
-        public Netflix(GetCurrentUserNetflixUserInfo GetUserInfo = null)
+        public Netflix(Boolean FillObjectsOnDemand = true, GetCurrentUserNetflixUserInfo GetUserInfo = null)
         {
+            _FillObjectsOnDemand = FillObjectsOnDemand;
+
             Login.CheckInformationSet();
             if (_GetUserInfo == null)
                 _GetUserInfo = GetUserInfo;
@@ -150,7 +164,7 @@ namespace FlixSharp
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public Movies GetSimilarTitles(String Id, Int32 Limit = 10, Boolean OnUserBehalf = true)
+        public async Task<Movies> GetSimilarTitles(String Id, Int32 Limit = 10, Boolean OnUserBehalf = true)
         {
             Login.CheckInformationSet();
             return null;

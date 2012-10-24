@@ -8,11 +8,25 @@ namespace FlixSharp.Holders
 {
     public class People : IEnumerable<Person>
     {
-        List<Person> _people = new List<Person>();
+        Dictionary<String, Person> _people = new Dictionary<String, Person>();
+
+        public void AddRange(IEnumerable<Person> people)
+        {
+            foreach (Person p in people)
+                if (_people.ContainsKey(p.Id))
+                    _people[p.Id] = p.AddParent(this);
+                else
+                    _people.Add(p.Id, p.AddParent(this));
+        }
+
+        public Person Find(String id)
+        {
+            return _people[id];
+        }
 
         public IEnumerator<Person> GetEnumerator()
         {
-            return _people.GetEnumerator();
+            return _people.Values.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

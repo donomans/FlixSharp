@@ -8,21 +8,32 @@ namespace FlixSharp.Holders
 {
     public class Movies : IEnumerable<Movie>
     {
-        List<Movie> _movies = new List<Movie>();
+        Dictionary<String, Movie> _movies = new Dictionary<String, Movie>();
+
+        public Movie Find(String id)
+        {
+            return _movies[id];
+        }
 
         public void AddRange(IEnumerable<Movie> movies)
         {
-            _movies.AddRange(movies);
+            foreach (Movie m in movies)
+                if (_movies.ContainsKey(m.Id))
+                    _movies[m.Id] = m.AddParent(this);
+                else
+                    _movies.Add(m.Id, m.AddParent(this));
         }
 
         public IEnumerator<Movie> GetEnumerator()
         {
-            return _movies.GetEnumerator();
+            return _movies.Values.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
+
     }
 }
