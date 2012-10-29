@@ -22,12 +22,13 @@ namespace FlixSharp.Async
             }
         }
 
-        public static async Task<IEnumerable<Movie>> GetExpandedMovieDetails(XDocument doc)
+        public static async Task<IEnumerable<Title>> GetExpandedMovieDetails(XDocument doc)
         {
+            ///loop through and do a NetflixFill.whatever to fill the titles
             return null;
         }
 
-        public static async Task<IEnumerable<Movie>> GetCompleteMovieDetails(XDocument doc)
+        public static async Task<IEnumerable<Title>> GetCompleteMovieDetails(XDocument doc)
         {
             return null;
         }
@@ -37,16 +38,13 @@ namespace FlixSharp.Async
             return null;
         }
 
-        public static async Task<String> GetSynopsis(String NetflixId)
-        {
-            NetflixId = GetIdFromUrl(NetflixId);
-            XDocument doc = await LoadXDocumentAsync(String.Format(NetflixConstants.TitleSynopsisUrl, NetflixId));
-            return (String)doc.Element("synopsis");
-        }
+        
+
 
         public static String GetIdFromUrl(String NetflixIdUrl)
         {
-            return Regex.Match(NetflixIdUrl, "[0-9]{4,9}").Value;
+            return Regex.Match(NetflixIdUrl, "[0-9]{4,10}").Value; 
+            ///Netflix IDs seem to be 5-9 characters, but there may be some 4 character or 10 character that I don't know about
         }
     }
 }

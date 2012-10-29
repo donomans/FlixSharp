@@ -24,7 +24,7 @@ namespace FlixSharp.Queries
             TitleExpansion TitleExpansionLevel = TitleExpansion.Minimal,
             PersonExpansion PersonExpansionLevel = PersonExpansion.Minimal)
         {
-            Netflix.Login.CheckInformationSet();
+            NetflixLogin.CheckInformationSet();
 
             Dictionary<String, String> extraParams = new Dictionary<String, String>();
             extraParams.Add("term", OAuth.OAuthHelpers.Encode(SearchTerm));
@@ -41,49 +41,36 @@ namespace FlixSharp.Queries
                 }
             }
             
-            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(Netflix.Login.SharedSecret,
-                Netflix.Login.ConsumerKey,
-                NetflixConstants.CatalogTitleUrl,
+            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                NetflixConstants.CatalogTitleSearchUrl,
                 "GET",
                 tokenSecret,
                 extraParams);
 
-            XDocument moviedoc = await AsyncHelpers.LoadXDocumentAsync(titleurl);
+            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
             
-            String personurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(Netflix.Login.SharedSecret,
-                Netflix.Login.ConsumerKey,
-                NetflixConstants.CatalogPeopleUrl,
+            String personurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                NetflixConstants.CatalogPeopleSearcUrl,
                 "GET",
                 tokenSecret,
                 extraParams);
 
-            XDocument persondoc = await AsyncHelpers.LoadXDocumentAsync(personurl);
+            var persondoc = AsyncHelpers.LoadXDocumentAsync(personurl);
             
-            Movies movies = new Movies();
+            Titles movies = new Titles();
 
             switch (TitleExpansionLevel)
             {
                 case TitleExpansion.Minimal:
                     movies.AddRange(from movie
-                         in moviedoc.Descendants("catalog_title")
-                                    select new Movie(TitleExpansion.Minimal)
+                                    in (await moviedoc).Descendants("catalog_title")
+                                    select new Title(TitleExpansion.Minimal)
                                     {
                                         IdUrl = movie.Element("id").Value,
                                         Year = (Int32)movie.Element("release_year"),
-                                        Title = (String)movie.Element("title").Attribute("regular"),
-                                        ShortTitle = (String)movie.Element("title").Attribute("short"),
-                                        BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-                                        BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large")
-                                    });
-                    break;
-                case TitleExpansion.Basic:
-                    movies.AddRange(from movie
-                                    in moviedoc.Descendants("catalog_title")
-                                    select new Movie(TitleExpansion.Minimal)
-                                    {
-                                        IdUrl = movie.Element("id").Value,
-                                        Year = (Int32)movie.Element("release_year"),
-                                        Title = (String)movie.Element("title").Attribute("regular"),
+                                        FullTitle = (String)movie.Element("title").Attribute("regular"),
                                         ShortTitle = (String)movie.Element("title").Attribute("short"),
                                         BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
                                         BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
@@ -96,18 +83,31 @@ namespace FlixSharp.Queries
                                                              where tv.Attribute("scheme").Value == "http://api-public.netflix.com/categories/tv_ratings"
                                                              select tv)),
                                         AverageRating = (Single)movie.Element("average_rating"),
-                                        RunTime = (Int32?)movie.Element("runtime")
+                                        RunTime = (Int32?)movie.Element("runtime"),
+                                        NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
+                                            movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
+                                            movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
+                                                NetflixType.SeriesSeason : NetflixType.Series)
                                     });
-                    foreach (Movie m in movies)
-                    {
-                        m.Synopsis = await AsyncHelpers.GetSynopsis(m.Id);
-                    }
                     break;
+                //case TitleExpansion.Basic:
+                //    movies.AddRange(from movie
+                //                    in (await moviedoc).Descendants("catalog_title")
+                //                    select new Movie(TitleExpansion.Minimal)
+                //                    {
+                                        
+                //                    });
+                //    Netflix n = new Netflix();
+                //    foreach (Movie m in movies)
+                //    {
+                //        m.Synopsis = await n.Fill.GetSynopsis(m.Id);
+                //    }
+                //    break;
                 case TitleExpansion.Expanded:
-                    movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(await moviedoc));
                     break;
                 case TitleExpansion.Complete:
-                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(await moviedoc));
                     break;
             }
 
@@ -119,7 +119,7 @@ namespace FlixSharp.Queries
             {
                 case PersonExpansion.Minimal:
                     people.AddRange(from person
-                                    in persondoc.Descendants("person")
+                                    in (await persondoc).Descendants("person")
                                     select new Person(PersonExpansion.Minimal)
                                     {
                                         IdUrl = person.Element("id").Value,
@@ -128,7 +128,7 @@ namespace FlixSharp.Queries
                                     });
                     break;
                 case PersonExpansion.Complete:
-                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(persondoc));
+                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
                     break;
             }
 
@@ -140,10 +140,10 @@ namespace FlixSharp.Queries
             return sr;
         }
 
-        public async Task<Movies> SearchTitles(String Title, Int32 Limit = 10, Boolean OnUserBehalf = true,
+        public async Task<Titles> SearchTitles(String Title, Int32 Limit = 10, Boolean OnUserBehalf = true,
             TitleExpansion ExpansionLevel = TitleExpansion.Minimal)
         {
-            Netflix.Login.CheckInformationSet();
+            NetflixLogin.CheckInformationSet();
 
             Dictionary<String, String> extraParams = new Dictionary<String, String>();
             extraParams.Add("term", OAuth.OAuthHelpers.Encode(Title));
@@ -161,75 +161,95 @@ namespace FlixSharp.Queries
                 }
             }
 
-            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(Netflix.Login.SharedSecret,
-                Netflix.Login.ConsumerKey,
-                NetflixConstants.CatalogTitleUrl,
+            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                NetflixConstants.CatalogTitleSearchUrl,
                 "GET",
                 tokenSecret,
                 extraParams);
 
-            XDocument moviedoc = await AsyncHelpers.LoadXDocumentAsync(titleurl);
+            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
 
-            Movies movies = new Movies();
-            
+            Titles movies = new Titles();
+
             switch (ExpansionLevel)
             {
                 case TitleExpansion.Minimal:
                     movies.AddRange(from movie
-                         in moviedoc.Descendants("catalog_title")
-                                    select new Movie(TitleExpansion.Minimal)
+                         in (await moviedoc).Descendants("catalog_title")
+                                    select new Title(TitleExpansion.Minimal)
                                     {
                                         IdUrl = movie.Element("id").Value,
                                         Year = (Int32)movie.Element("release_year"),
-                                        Title = (String)movie.Element("title").Attribute("regular"),
-                                        ShortTitle = (String)movie.Element("title").Attribute("short"),
-                                        BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-                                        BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large")
-                                    });
-                    break;
-                case TitleExpansion.Basic:
-                    movies.AddRange(from movie
-                                    in moviedoc.Descendants("catalog_title")
-                                    select new Movie(TitleExpansion.Minimal)
-                                    {
-                                        IdUrl = movie.Element("id").Value,
-                                        Year = (Int32)movie.Element("release_year"),
-                                        Title = (String)movie.Element("title").Attribute("regular"),
+                                        FullTitle = (String)movie.Element("title").Attribute("regular"),
                                         ShortTitle = (String)movie.Element("title").Attribute("short"),
                                         BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
                                         BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
                                         Rating = new Rating((from mpaa
                                                             in movie.Elements("category")
-                                                             where mpaa.Attribute("scheme").Value == "http://api-public.netflix.com/categories/mpaa_ratings"
+                                                             where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
                                                              select mpaa) ??
                                                             (from tv
                                                             in movie.Elements("category")
-                                                             where tv.Attribute("scheme").Value == "http://api-public.netflix.com/categories/tv_ratings"
+                                                             where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
                                                              select tv)),
                                         AverageRating = (Single)movie.Element("average_rating"),
-                                        RunTime = (Int32?)movie.Element("runtime")
+                                        RunTime = (Int32?)movie.Element("runtime"),
+                                        Genres = new List<String>(from genres
+                                                                  in movie.Elements("category")
+                                                                  where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                                                                  select (String)genres.Attribute("term"))
                                     });
-                    foreach (Movie m in movies)
-                    {
-                        m.Synopsis = await AsyncHelpers.GetSynopsis(m.Id);
-                    }
                     break;
+                //case TitleExpansion.Basic:
+                //    movies.AddRange(from movie
+                //                    in (await moviedoc).Descendants("catalog_title")
+                //                    select new Movie(TitleExpansion.Minimal)
+                //                    {
+                //                        IdUrl = movie.Element("id").Value,
+                //                        Year = (Int32)movie.Element("release_year"),
+                //                        Title = (String)movie.Element("title").Attribute("regular"),
+                //                        ShortTitle = (String)movie.Element("title").Attribute("short"),
+                //                        BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
+                //                        BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
+                //                        Rating = new Rating((from mpaa
+                //                                            in movie.Elements("category")
+                //                                             where mpaa.Attribute("scheme").Value == "http://api-public.netflix.com/categories/mpaa_ratings"
+                //                                             select mpaa) ??
+                //                                            (from tv
+                //                                            in movie.Elements("category")
+                //                                             where tv.Attribute("scheme").Value == "http://api-public.netflix.com/categories/tv_ratings"
+                //                                             select tv)),
+                //                        AverageRating = (Single)movie.Element("average_rating"),
+                //                        RunTime = (Int32?)movie.Element("runtime"),
+                //                        Genres = new List<String>(from genres
+                //                                                  in movie.Elements("category")
+                //                                                  where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                //                                                  select (String)genres.Attribute("term"))
+                //                    });
+                //    Netflix n = new Netflix();
+                //    foreach (Movie m in movies)
+                //    {
+                //        m.Synopsis = await n.Fill.GetSynopsis(m.Id);
+                //    }
+                //    break;
                 case TitleExpansion.Expanded:
-                    movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(await moviedoc));
                     break;
                 case TitleExpansion.Complete:
-                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(await moviedoc));
                     break;
             }
 
-            
+
             return movies;
+
         }
 
         public async Task<People> SearchPeople(String Name, Int32 Limit = 10, Boolean OnUserBehalf = true,
            PersonExpansion ExpansionLevel = PersonExpansion.Minimal)
         {
-            Netflix.Login.CheckInformationSet();
+            NetflixLogin.CheckInformationSet();
 
             Dictionary<String, String> extraParams = new Dictionary<String, String>();
             extraParams.Add("term", OAuth.OAuthHelpers.Encode(Name));
@@ -247,14 +267,14 @@ namespace FlixSharp.Queries
                 }
             }
 
-            String personurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(Netflix.Login.SharedSecret,
-                Netflix.Login.ConsumerKey,
-                NetflixConstants.CatalogPeopleUrl,
+            String personurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                NetflixConstants.CatalogPeopleSearcUrl,
                 "GET",
                 tokenSecret,
                 extraParams);
 
-            XDocument persondoc = await AsyncHelpers.LoadXDocumentAsync(personurl);
+            var persondoc = AsyncHelpers.LoadXDocumentAsync(personurl);
 
             People people = new People();
 
@@ -262,7 +282,7 @@ namespace FlixSharp.Queries
             {
                 case PersonExpansion.Minimal:
                     people.AddRange(from person
-                                    in persondoc.Descendants("person")
+                                    in (await persondoc).Descendants("person")
                                     select new Person(PersonExpansion.Minimal)
                                     {
                                         IdUrl = person.Element("id").Value,
@@ -271,7 +291,7 @@ namespace FlixSharp.Queries
                                     });
                     break;
                 case PersonExpansion.Complete:
-                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(persondoc));
+                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
                     break;
             }
 
@@ -281,16 +301,16 @@ namespace FlixSharp.Queries
 
         public async Task<IEnumerable<String>> AutoCompleteTitle(String Title, Int32 Limit = 10)
         {
-            Netflix.Login.CheckInformationSet();
+            NetflixLogin.CheckInformationSet();
 
             String url = NetflixConstants.CatalogTitleAutoCompleteUrl + 
-                "?oauth_consumer_key=" + Netflix.Login.ConsumerKey +
+                "?oauth_consumer_key=" + NetflixLogin.ConsumerKey +
                 "&term=" + Title;
 
-            XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.LoadXDocumentAsync(url);
 
             var titles = from someelement
-                         in doc.Descendants("title")
+                         in (await doc).Descendants("title")
                          select someelement.Attribute("short").Value;
 
             return titles.Take(Limit);

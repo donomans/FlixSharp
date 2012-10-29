@@ -13,9 +13,8 @@ namespace FlixSharp.Holders
     public enum TitleExpansion
     {
         Minimal = 1,
-        Basic = 2,
-        Expanded = 4,
-        Complete = 8
+        Expanded = 2,
+        Complete = 4
     }
 
     public enum PersonExpansion
@@ -59,6 +58,15 @@ namespace FlixSharp.Holders
                         case "R":
                             MpaaRating = Holders.MpaaRating.R;
                             break;
+                        case "PG-13":
+                            MpaaRating = Holders.MpaaRating.PG13;
+                            break;
+                        case "PG":
+                            MpaaRating = Holders.MpaaRating.PG;
+                            break;
+                        case "NR":
+                            MpaaRating = Holders.MpaaRating.Unrated;
+                            break;
                         default:
                             MpaaRating = Holders.MpaaRating.None;
                             break;
@@ -94,17 +102,39 @@ namespace FlixSharp.Holders
         TV
     }
 
+    [Flags]
     public enum Format
     {
-        Streaming,
-        Bluray,
-        DVD
+        Streaming = 1,
+        Bluray = 2,
+        DVD = 4
     }
 
-    public enum ScreenFormat
+    public struct FormatAvailability
     {
-        Widescreen,
-        Standard
+        public DateTime? AvailableFrom;
+        public DateTime? AvailableUntil;
+        public String Format;
+    }
+
+    public struct ScreenFormats
+    {
+        public String Format;
+        public String ScreenFormat;
+    }
+    //public enum ScreenFormat
+    //{
+    //    Widescreen16by9,
+    //    Widescreen24by10,
+    //    Standard
+    //}
+
+    public enum NetflixType
+    {
+        Movie,
+        Series,
+        SeriesSeason,
+        Programs
     }
 
     public enum MpaaRating
@@ -123,4 +153,21 @@ namespace FlixSharp.Holders
         None
     }
 
+
+    public struct Award
+    {
+        public Int32? Year;
+        public AwardType Type;
+        public Boolean Winner;
+        public String PersonId;
+        public String AwardName;
+    }
+
+    public enum AwardType
+    {
+        AFI,
+        Baftas,
+        Academy_Awards,
+        Razzie
+    }
 }

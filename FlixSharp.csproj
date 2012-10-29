@@ -41,12 +41,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\AsyncHelpers.cs" />
+    <Compile Include="Helpers\GeneralHelpers.cs" />
     <Compile Include="Holders\NetflixEnums.cs" />
-    <Compile Include="Holders\NetflixMovie.cs" />
-    <Compile Include="Holders\NetflixMovies.cs" />
+    <Compile Include="Holders\NetflixTitle.cs" />
+    <Compile Include="Holders\NetflixTitles.cs" />
     <Compile Include="Holders\NetflixPeople.cs" />
     <Compile Include="Holders\NetflixPerson.cs" />
     <Compile Include="Holders\NetflixSearchResults.cs" />
+    <Compile Include="Queries\NetflixFill.cs" />
+    <Compile Include="Queries\NetflixLogin.cs" />
     <Compile Include="Queries\NetflixSearch.cs" />
     <Compile Include="Netflix.cs" />
     <Compile Include="Holders\NetflixAccount.cs" />

@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders
 {
-    public class Movies : IEnumerable<Movie>
+    public class Titles : IEnumerable<Title>
     {
-        Dictionary<String, Movie> _movies = new Dictionary<String, Movie>();
+        Dictionary<String, Title> _movies = new Dictionary<String, Title>();
 
-        public Movie Find(String id)
+        public Title Find(String id)
         {
             return _movies[id];
         }
 
-        public void AddRange(IEnumerable<Movie> movies)
+        public void AddRange(IEnumerable<Title> movies)
         {
-            foreach (Movie m in movies)
+            foreach (Title m in movies)
                 if (_movies.ContainsKey(m.Id))
                     _movies[m.Id] = m.AddParent(this);
                 else
                     _movies.Add(m.Id, m.AddParent(this));
         }
 
-        public IEnumerator<Movie> GetEnumerator()
+        public IEnumerator<Title> GetEnumerator()
         {
             return _movies.Values.GetEnumerator();
         }

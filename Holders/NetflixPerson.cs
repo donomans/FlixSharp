@@ -31,7 +31,7 @@ namespace FlixSharp.Holders
                 {
                     String[] splits = IdUrl.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
                     String newid = splits[splits.Length - 1];
-                    Match m = Regex.Match(newid, "[0-9]{5,9}");
+                    Match m = Regex.Match(newid, "[0-9]{4,10}");
                     if (m.Success)
                     {
                         id = newid;
@@ -50,7 +50,7 @@ namespace FlixSharp.Holders
 
         #region Complete
         public String ImageUrl { get; set; }
-        public List<Movie> Filmography { get; set; }
+        public List<Title> Filmography { get; set; }
         #endregion
 
         #region fill
