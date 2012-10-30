@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlixSharp.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,16 +29,8 @@ namespace FlixSharp.Holders
                     return id;
                 else
                 {
-                    String[] splits = IdUrl.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-                    String newid = splits[splits.Length - 1];
-                    Match m = Regex.Match(newid, "[0-9]{5,9}");
-                    if (m.Success)
-                    {
-                        id = newid;
-                        return id;
-                    }
-                    else
-                        return id;
+                    id = GeneralHelpers.GetIdFromUrl(IdUrl);
+                    return id;
                 }
             }
         }

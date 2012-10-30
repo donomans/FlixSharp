@@ -65,7 +65,11 @@ namespace FlixSharp.Holders
                             MpaaRating = Holders.MpaaRating.PG;
                             break;
                         case "NR":
+                        case "UR":
                             MpaaRating = Holders.MpaaRating.Unrated;
+                            break;
+                        case "G":
+                            MpaaRating = Holders.MpaaRating.G;
                             break;
                         default:
                             MpaaRating = Holders.MpaaRating.None;

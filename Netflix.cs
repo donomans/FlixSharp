@@ -34,8 +34,9 @@ namespace FlixSharp
                     na = Netflix._GetUserInfo();
                     return na;
                 }
-                catch (Exception ex) 
+                catch (Exception) 
                 {
+                    ///add some logging? 
                 }
             }
             return null;
@@ -74,11 +75,11 @@ namespace FlixSharp
                 _GetUserInfo = GetUserInfo;
         }
 
-        public NetflixSearch Search { get { return search; } }
-        private NetflixSearch search = new NetflixSearch();
+        public static NetflixSearch Search { get { return search; } }
+        private static NetflixSearch search = new NetflixSearch();
 
-        public NetflixFill Fill { get { return fill; } }
-        private NetflixFill fill = new NetflixFill();
+        public static NetflixFill Fill { get { return fill; } }
+        private static NetflixFill fill = new NetflixFill();
 
         public static NetflixLogin Login { get { return login; } }
         private static NetflixLogin login = new NetflixLogin();

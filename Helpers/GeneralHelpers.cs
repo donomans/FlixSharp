@@ -3,22 +3,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FlixSharp.Helpers
 {
     internal static class GeneralHelpers
     {
-        public static DateTime FromUnixTime(Int32 seconds)
+        //public static DateTime FromUnixTime(Int32 seconds)
+        //{
+        //    return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(seconds);
+        //}
+        public static DateTime FromUnixTime(Int64 seconds)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(seconds);
         }
-        public static DateTime FromUnixTime(this DateTime source, Int32 seconds)
+        //public static DateTime FromUnixTime(this DateTime source, Int32 seconds)
+        //{
+        //    if (source == null)
+        //        return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(seconds);
+        //    else
+        //        return source.AddSeconds(seconds);
+        //}
+        public static DateTime FromUnixTime(this DateTime source, Int64 seconds)
         {
             if (source == null)
                 return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(seconds);
             else
                 return source.AddSeconds(seconds);
+        }
+
+
+
+        public static String GetIdFromUrl(String NetflixIdUrl)
+        {
+            return Regex.Match(NetflixIdUrl, "[0-9]{4,10}").Value;
+            ///Netflix IDs seem to be 5-9 characters, but there may be some 4 character or 10 character that I don't know about
         }
     }
 
