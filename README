@@ -1,11 +1,55 @@
-﻿A C# Netflix API Wrapper for doing all major API actions
+﻿A C# .Net 4.5 Netflix, Rotten Tomatoes, Amazon API Wrapper for doing all major API actions
 
-OAuth Logins
+Netflix:
+	- OAuth Logins/requests
+	- Search (Catalog/Title, Catalog/Autocomplete, Catalog/People)
+	- Title expansion
+	- Person expansion
+(Todo) - User actions (Add/Modify/View user details)
 
-Search (Catalog/Title, Catalog/Autocomplete, Catalog/People)
+Rotten Tomatoes:
+(Todo) - Search
+(Todo) - Title expansion
+(Todo) - Person expansion
 
-Title expansion
+Amazon:
+(Todo) - Search
+(Todo) - Title details (Pricing and buy links) 
 
-Person expansion
 
-User actions (Add/Modify/View user details)
+Examples:
+
+1) Setup:
+
+using FlixSharp;
+
+/// set up the Netflix keys 
+Netflix.Login.SetCredentials(
+                "Consumer Key",
+                "Shared Secret",
+                "Application Name");
+
+/// pass a method that will return a FlixSharp.Holders.Account 
+/// value based on the current logged in user (in MVC or wherever else this is used)
+/// to allow for requests to be automatically made on user's behalf
+/// this will be used whenever it is appropriate
+Netflix.SetMethodForGettingCurrentUserAccount(GetCurrentUserNetflixUserInfo);
+
+
+2) Searching:
+
+/// Search method will search both Title catalog and People catalog
+SearchResults sr = await Netflix.Search.Search("The Godfather");
+/// SearchTitle searches Title catalog
+Titles t = await Netflix.Search.SearchTitles("The Godfather");
+/// SearchPeople searches People catalog
+People p = await Netflix.Search.SearchPeople("Al Pacino");
+/// AutoCompleteTitle searches the autocomplete title catalog
+var titlelist = await Netflix.Search.AutoCompleteTitle("The Godfather");
+
+3) Title / People filling
+
+Title thegodfather = await Netflix.Fill.GetCompleteTitle("http://api-public.netflix.com/catalog/titles/movies/60011152");
+///or
+Title thegodfather = await Netflix.Fill.GetCompleteTitle("60011152", NetflixType.Movie);
+

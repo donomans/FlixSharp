@@ -72,7 +72,6 @@ namespace FlixSharp.Queries
             }
             return extraParams;
         }
-
     }
 
     public class FillTitles
@@ -119,7 +118,7 @@ namespace FlixSharp.Queries
             if (OnUserBehalf)
             {
                 ///14) User Rating for title (if on user behalf)
-                //var userrating = GetUserRating(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+                //var userrating = Netflix.Users.Titles.GetUserRating(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
             }
             Title title = await nfm;
             title.Synopsis = await synopsis;
@@ -130,6 +129,44 @@ namespace FlixSharp.Queries
             title.Directors = await directors;
             title.SimilarTitles = await similartitles;
 
+            title.completeness = TitleExpansion.Complete;
+
+            return title;
+        }
+
+        public async Task<Title> GetCompleteTitleFromExpanded(String NetflixIdUrl, Boolean OnUserBehalf)
+        {
+            return await GetCompleteTitleFromExpanded(NetflixIdUrl, null, OnUserBehalf);
+        }
+        public async Task<Title> GetCompleteTitleFromExpanded(String NetflixId, NetflixType? TitleType = null, Boolean OnUserBehalf = true)
+        {
+            NetflixLogin.CheckInformationSet();
+
+            Account NetflixAccount = null;
+            if (OnUserBehalf)
+                NetflixAccount = Netflix.SafeReturnUserInfo();
+
+            TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
+
+            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+
+            var nfm = GetBaseTitle(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+
+            var similartitles = GetSimilarTitles(NetflixId, NetflixAccount, OnUserBehalf, 20, 0, TitleType);
+
+            var awards = GetAwards(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+
+            var bonus = GetBonusMaterials(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+
+            if (OnUserBehalf)
+            {
+                ///14) User Rating for title (if on user behalf)
+                //var userrating = Netflix.Users.Titles.GetUserRating(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+            }
+            Title title = await nfm;
+            title.Awards = await awards;
+            title.SimilarTitles = await similartitles;
+            title.BonusMaterials = await bonus;
             title.completeness = TitleExpansion.Complete;
 
             return title;
@@ -168,13 +205,16 @@ namespace FlixSharp.Queries
             ///13) Directors
             var directors = GetDirectors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
+            ///14) Bonus materials
+            var bonus = GetBonusMaterials(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+
             Title title = await nfm;
             title.Synopsis = await synopsis;
             title.ScreenFormats = await screenformats;
             title.Formats = await formatavailability;
             title.Actors = await actors;
             title.Directors = await directors;
-
+            title.BonusMaterials = await bonus;
             title.completeness = TitleExpansion.Expanded;
 
             return title;
@@ -256,8 +296,15 @@ namespace FlixSharp.Queries
                         Genres = new List<String>(from genres
                                                   in movie.Elements("category")
                                                   where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
-                                                  select (String)genres.Attribute("term"))
-
+                                                  select (String)genres.Attribute("term")),
+                        NetflixSiteUrl = (from webpage
+                                          in movie.Elements("link")
+                                          where (String)webpage.Attribute("title") == "web page"
+                                          select (String)webpage.Attribute("href")).FirstOrDefault(),
+                        OfficialWebsite = (from webpage
+                                           in movie.Elements("link")
+                                           where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                           select (String)webpage.Attribute("href")).FirstOrDefault()
                     }).SingleOrDefault();
         }
 
@@ -448,12 +495,12 @@ namespace FlixSharp.Queries
                                 {
                                     Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
                                     AwardName = (String)awards.Element("category").Attribute("term"),
-                                    PersonId = (awards.Element("link") != null ?
+                                    PersonIdUrl = (awards.Element("link") != null ?
                                        (String)awards.Element("link").Attribute("href") : null),
                                     Type = (AwardType)Enum.Parse(typeof(AwardType),
-                                       awards.Element("category").Attribute("scheme").Value.
+                                       awards.Element("category").Attribute("scheme").Value.Replace("_", "").
                                        Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-                                           Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1], true),
+                                           Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
                                     Winner = false
                                 };
             var awardwinners = from awards
@@ -462,12 +509,12 @@ namespace FlixSharp.Queries
                                {
                                    Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
                                    AwardName = (String)awards.Element("category").Attribute("term"),
-                                   PersonId = (awards.Element("link") != null ?
+                                   PersonIdUrl = (awards.Element("link") != null ?
                                       (String)awards.Element("link").Attribute("href") : null),
                                    Type = (AwardType)Enum.Parse(typeof(AwardType),
                                       awards.Element("category").Attribute("scheme").Value.
                                       Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-                                          Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1], true),
+                                          Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
                                    Winner = true
                                };
 
@@ -680,7 +727,7 @@ namespace FlixSharp.Queries
             NetflixLogin.CheckInformationSet();
             String TokenSecret;
             Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, NetflixAccount, out TokenSecret);
-
+            
             return await GetSimilarTitles(NetflixId, extraParams, TokenSecret, Limit, Page, TitleType);
         }
         public async Task<List<Title>> GetSimilarTitles(String NetflixId, Boolean OnUserBehalf = true, Int32 Limit = 10, Int32 Page = 0, NetflixType? TitleType = null)
@@ -696,6 +743,8 @@ namespace FlixSharp.Queries
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
             NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
 
+            ExtraParams.Add("start_index", Page.ToString());
+            ExtraParams.Add("max_results", Limit.ToString());
 
             String url = "";
             switch (TitleType)
@@ -740,39 +789,44 @@ namespace FlixSharp.Queries
             return movies;
         }
 
-        public async Task<List<Title>> GetRelatedTitles(String NetflixId, Int32 Limit = 10, Int32 Page = 0, Account NetflixAccount = null, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        public async Task<List<String>> GetBonusMaterials(String NetflixIdUrl, Boolean OnUserBehalf)
         {
-            throw new NotImplementedException();
-
+            return await GetBonusMaterials(NetflixIdUrl, OnUserBehalf, null);
+        }
+        public async Task<List<String>> GetBonusMaterials(String NetflixId, NetflixType TitleType, Boolean OnUserBehalf = true)
+        {
+            return await GetBonusMaterials(NetflixId, OnUserBehalf, TitleType);
+        }
+        public async Task<List<String>> GetBonusMaterials(String NetflixId, Account NetflixAccount, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
             NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, NetflixAccount, out TokenSecret);
 
-            Dictionary<String, String> extraParams = new Dictionary<String, String>();
-            extraParams.Add("start_index", Page.ToString());
-            extraParams.Add("max_results", Limit.ToString());
+            return await GetBonusMaterials(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        public async Task<List<String>> GetBonusMaterials(String NetflixId, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
+            NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, out TokenSecret);
 
-            String tokenSecret = "";
-            if (OnUserBehalf)
-            {
-                if (NetflixAccount == null)
-                    NetflixAccount = Netflix.SafeReturnUserInfo();
-                if (NetflixAccount != null)
-                {
-                    tokenSecret = NetflixAccount.TokenSecret;
-                    extraParams.Add("oauth_token", NetflixAccount.Token);
-                }
-            }
-
+            return await GetBonusMaterials(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        private async Task<List<String>> GetBonusMaterials(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
+        {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
             NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesSynopsis, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesBonusMaterials, NetflixId);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesSynopsis, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesBonusMaterials, NetflixId);
                     break;
                 case NetflixType.SeriesSeason:
                 case NetflixType.Programs:
@@ -783,29 +837,22 @@ namespace FlixSharp.Queries
                 NetflixLogin.ConsumerKey,
                 url,
                 "GET",
-                tokenSecret,
-                extraParams);
-
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
-            List<Title> movies = new List<Title>(Limit);
-
-            movies.AddRange(from movie
-                            in (await doc).Element("similars").Elements("similars_item")
-                            select new Title(TitleExpansion.Minimal)
-                            {
-                                IdUrl = movie.Element("id").Value,
-                                Year = (Int32)movie.Element("release_year"),
-                                FullTitle = (String)movie.Element("title").Attribute("regular"),
-                                AverageRating = (Single)movie.Element("average_rating"),
-                                ShortTitle = (String)movie.Element("title").Attribute("short"),
-                                BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-                                BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-                                NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
-                                    movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
-                                    movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
-                                        NetflixType.SeriesSeason : NetflixType.Series)
-                            });
-            return movies;
+                TokenSecret,
+                ExtraParams);
+            try
+            {
+                var doc = AsyncHelpers.LoadXDocumentAsync(url);
+                
+                var bonus = from movie
+                            in (await doc).Elements("bonus_materials")
+                            select (String)movie.Element("link").Attribute("href");
+                return bonus.ToList();
+            }
+            catch (Exception)
+            {
+                ///bonus materials aren't terribly common
+                return null;
+            }
         }
     }
     public class FillPeople
@@ -826,13 +873,15 @@ namespace FlixSharp.Queries
 
             NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
 
+            ///1) get base
             var nfp = GetBasePerson(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
-            ///1) get filmography
-            
+            ///2) get filmography
+            var filmography = GetFilmography(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+
             Person person = await nfp;
             person.completeness = PersonExpansion.Complete;
-
+            person.Filmography = await filmography;
             return person;
         }
 
@@ -897,487 +946,79 @@ namespace FlixSharp.Queries
                         }).SingleOrDefault();
             return p;
         }
+
+        public async Task<List<Title>> GetFilmography(String NetflixIdUrl, Boolean OnUserBehalf)
+        {
+            return await GetFilmography(NetflixIdUrl, OnUserBehalf, null);
+        }
+        public async Task<List<Title>> GetFilmography(String NetflixId, NetflixType TitleType, Boolean OnUserBehalf = true)
+        {
+            return await GetFilmography(NetflixId, OnUserBehalf, TitleType);
+        }
+        public async Task<List<Title>> GetFilmography(String NetflixId, Account NetflixAccount, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
+            NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, NetflixAccount, out TokenSecret);
+
+            return await GetFilmography(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        public async Task<List<Title>> GetFilmography(String NetflixId, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
+            NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, out TokenSecret);
+
+            return await GetFilmography(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        private async Task<List<Title>> GetFilmography(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
+        {
+            TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
+            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+
+            String url = "";
+            switch (TitleType)
+            {
+                case NetflixType.Movie:
+                    url = String.Format(NetflixConstants.MoviesSimilars, NetflixId);
+                    break;
+                case NetflixType.Series:
+                    url = String.Format(NetflixConstants.SeriesSimilars, NetflixId);
+                    break;
+                case NetflixType.SeriesSeason:
+                case NetflixType.Programs:
+                default: return null;
+            }
+
+            url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                url,
+                "GET",
+                TokenSecret,
+                ExtraParams);
+
+            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+
+            List<Title> movies = new List<Title>();
+            movies.AddRange(from movie
+                            in (await doc).Element("filmography").Elements("filmography_item")
+                            select new Title(TitleExpansion.Minimal)
+                            {
+                                IdUrl = movie.Element("id").Value,
+                                Year = (Int32)movie.Element("release_year"),
+                                FullTitle = (String)movie.Element("title").Attribute("regular"),
+                                AverageRating = (Single)movie.Element("average_rating"),
+                                ShortTitle = (String)movie.Element("title").Attribute("short"),
+                                BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
+                                BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
+                                NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
+                                    movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
+                                    movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
+                                        NetflixType.SeriesSeason : NetflixType.Series)
+                            });
+            return movies;
+        }
+
     }
-
-    //public class FillMovies
-    //{ 
-    //    public async Task<List<Title>> GetRelatedTitles(String NetflixId, Account na = null, Int32 Limit = 10, Int32 Page = 0, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-    //        extraParams.Add("start_index", Page.ToString());
-    //        extraParams.Add("max_results", Limit.ToString());
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.MoviesRelated, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        var doc = AsyncHelpers.LoadXDocumentAsync(url);
-    //        List<Title> movies = new List<Title>(Limit);
-    //        movies.AddRange(from movie
-    //                        in (await doc).Element("similars").Elements("similars_item")
-    //                        select new Title(TitleExpansion.Minimal)
-    //                        {
-    //                            IdUrl = movie.Element("id").Value,
-    //                            Year = (Int32)movie.Element("release_year"),
-    //                            FullTitle = (String)movie.Element("title").Attribute("regular"),
-    //                            AverageRating = (Single)movie.Element("average_rating"),
-    //                            ShortTitle = (String)movie.Element("title").Attribute("short"),
-    //                            BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-    //                            BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-    //                            NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
-    //                                movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
-    //                                movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
-    //                                    NetflixType.SeriesSeason : NetflixType.Series)
-    //                        });
-    //        return movies;
-    //    }
-
-    //}
-    //public class FillSeries
-    //{
-    //    public async Task<Title> GetBaseTitle(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        String completetitleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesBaseInfo, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        XDocument doc = await AsyncHelpers.LoadXDocumentAsync(completetitleurl);
-
-    //        return (from movie
-    //                in doc.Elements("catalog_title")
-    //                select new Title(TitleExpansion.Minimal)
-    //                {
-    //                    IdUrl = movie.Element("id").Value,
-    //                    Year = (Int32)movie.Element("release_year"),
-    //                    FullTitle = (String)movie.Element("title").Attribute("regular"),
-    //                    ShortTitle = (String)movie.Element("title").Attribute("short"),
-    //                    BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-    //                    BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-    //                    Rating = new Rating((from mpaa
-    //                                        in movie.Elements("category")
-    //                                         where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
-    //                                         select mpaa) ??
-    //                                        (from tv
-    //                                        in movie.Elements("category")
-    //                                         where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
-    //                                         select tv)),
-    //                    AverageRating = (Single)movie.Element("average_rating"),
-    //                    RunTime = (Int32?)movie.Element("runtime"),
-    //                    Genres = new List<String>(from genres
-    //                                              in movie.Elements("category")
-    //                                              where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
-    //                                              select (String)genres.Attribute("term"))
-
-    //                }).SingleOrDefault();
-    //    }
-    //    public async Task<Title> GetCompleteTitle(String NetflixId, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        Account na = null;
-    //        if (OnUserBehalf)
-    //        {
-    //            na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        Title nfm = await GetBaseTitle(NetflixId, na);
-
-    //        ///4) get synopsis
-    //        var synopsis = GetSynopsis(NetflixId, na);
-
-    //        ///6) get similar titles (add those to database in basic format, similar to AsyncHelpers.GetDatabaseMovies
-    //        var similartitles = GetSimilarTitles(NetflixId, na);
-
-    //        ///8) get awards
-    //        var awards = GetAwards(NetflixId, na);
-
-    //        ///9) screen format / title format
-    //        var screenformats = GetScreenFormats(NetflixId, na);
-
-    //        ///10) format availability
-    //        var formatavailability = GetFormatAvailability(NetflixId, na);
-
-    //        ///12) Actors
-    //        var actors = GetActors(NetflixId, na);
-
-    //        ///13) Directors
-    //        var directors = GetDirectors(NetflixId, na);
-
-    //        nfm.Synopsis = await synopsis;
-    //        nfm.SimilarTitles = await similartitles;
-    //        nfm.Awards = await awards;
-    //        nfm.ScreenFormats = await screenformats;
-    //        nfm.Formats = await formatavailability;
-    //        nfm.Actors = await actors;
-    //        nfm.Directors = await directors;
-    //        nfm.completeness = TitleExpansion.Complete;
-
-    //        return nfm;
-    //    }
-
-    //    public async Task<People> GetDirectors(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesDirectors, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        var doc = AsyncHelpers.LoadXDocumentAsync(url);
-    //        People people = new People();
-    //        people.AddRange(from person
-    //                        in (await doc).Element("people").Elements("person")
-    //                        select new Person(PersonExpansion.Minimal)
-    //                        {
-    //                            IdUrl = person.Element("id").Value,
-    //                            Name = person.Element("name").Value,
-    //                            Bio = (String)person.Element("bio")
-    //                        });
-    //        return people;
-    //    }
-
-    //    public async Task<People> GetActors(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesCast, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        var doc = AsyncHelpers.LoadXDocumentAsync(url);
-    //        People people = new People();
-    //        people.AddRange(from person
-    //                        in (await doc).Element("people").Elements("person")
-    //                        select new Person(PersonExpansion.Minimal)
-    //                        {
-    //                            IdUrl = person.Element("id").Value,
-    //                            Name = person.Element("name").Value,
-    //                            Bio = (String)person.Element("bio")
-    //                        });
-    //        return people;
-    //    }
-
-    //    public async Task<List<Title>> GetSimilarTitles(String NetflixId, Account na = null, Int32 Limit = 10, Int32 Page = 0, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-    //        extraParams.Add("start_index", Page.ToString());
-    //        extraParams.Add("max_results", Limit.ToString());
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesSimilars, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        var doc = AsyncHelpers.LoadXDocumentAsync(url);
-    //        List<Title> movies = new List<Title>(Limit);
-    //        movies.AddRange(from movie
-    //                        in (await doc).Element("similars").Elements("similars_item")
-    //                        select new Title(TitleExpansion.Minimal)
-    //                        {
-    //                            IdUrl = movie.Element("id").Value,
-    //                            Year = (Int32)movie.Element("release_year"),
-    //                            FullTitle = (String)movie.Element("title").Attribute("regular"),
-    //                            AverageRating = (Single)movie.Element("average_rating"),
-    //                            ShortTitle = (String)movie.Element("title").Attribute("short"),
-    //                            BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-    //                            BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-    //                            NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
-    //                                movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
-    //                                movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
-    //                                    NetflixType.SeriesSeason : NetflixType.Series)
-    //                        });
-    //        return movies;
-    //    }
-
-    //    public async Task<List<Award>> GetAwards(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesAwards, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
-
-    //        var awardnominees = from awards
-    //                     in doc.Element("awards").Elements("award_nominee")
-    //                            select new Award()
-    //                            {///get all the nominees first?
-    //                                Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
-    //                                AwardName = (String)awards.Element("category").Attribute("term"),
-    //                                PersonId = (awards.Element("link") != null ?
-    //                                   (String)awards.Element("link").Attribute("href") : null),
-    //                                Type = (AwardType)Enum.Parse(typeof(AwardType),
-    //                                   awards.Element("category").Attribute("scheme").Value.
-    //                                   Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-    //                                       Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1], true),
-    //                                Winner = false
-    //                            };
-    //        var awardwinners = from awards
-    //                     in doc.Element("awards").Elements("award_winner")
-    //                           select new Award()
-    //                           {
-    //                               Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
-    //                               AwardName = (String)awards.Element("category").Attribute("term"),
-    //                               PersonId = (awards.Element("link") != null ?
-    //                                  (String)awards.Element("link").Attribute("href") : null),
-    //                               Type = (AwardType)Enum.Parse(typeof(AwardType),
-    //                                  awards.Element("category").Attribute("scheme").Value.
-    //                                  Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-    //                                      Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1], true),
-    //                               Winner = true
-    //                           };
-    //        List<Award> a = new List<Award>();
-    //        a.AddRange(awardnominees);
-    //        a.AddRange(awardwinners);
-    //        return a;
-    //    }
-
-    //    public async Task<List<FormatAvailability>> GetFormatAvailability(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesFormatAvailability, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
-
-    //        var formatavailability = from formats
-    //                            in doc.Element("delivery_formats").Elements("availability")
-    //                                 select new FormatAvailability()
-    //                                 {
-    //                                     AvailableFrom = formats.Attribute("available_from") == null || (String)formats.Attribute("available_from") == "" ?
-    //                                             null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_from"))),
-    //                                     AvailableUntil = formats.Attribute("available_until") == null || (String)formats.Attribute("available_until") == "" ?
-    //                                             null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_until"))),
-    //                                     Format = (String)formats.Element("category").Attribute("term")
-    //                                 };
-
-    //        List<FormatAvailability> fa = new List<FormatAvailability>();
-    //        fa.AddRange(formatavailability);
-    //        return fa;
-    //    }
-
-    //    public async Task<List<ScreenFormats>> GetScreenFormats(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesScreenFormat, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
-
-    //        var screenformats = from formats
-    //                            in doc.Element("screen_formats").Elements("screen_format")
-    //                            select new ScreenFormats()
-    //                            {
-    //                                Format = (from format
-    //                                        in formats.Elements("category")
-    //                                          where (String)format.Attribute("scheme") == NetflixConstants.Schemas.LinkTitleFormat
-    //                                          select (String)format.Attribute("term")).FirstOrDefault(),
-    //                                ScreenFormat = (from screenformat
-    //                                        in formats.Elements("category")
-    //                                                where (String)screenformat.Attribute("scheme") == NetflixConstants.Schemas.LinkScreenFormat
-    //                                                select (String)screenformat.Attribute("term")).FirstOrDefault()
-    //                            };
-
-    //        List<ScreenFormats> sf = new List<ScreenFormats>();
-    //        sf.AddRange(screenformats);
-    //        return sf;
-    //    }
-
-    //    public async Task<String> GetSynopsis(String NetflixId, Account na = null, Boolean OnUserBehalf = true)
-    //    {
-    //        NetflixLogin.CheckInformationSet();
-
-    //        Dictionary<String, String> extraParams = new Dictionary<String, String>();
-
-    //        String tokenSecret = "";
-    //        if (OnUserBehalf)
-    //        {
-    //            if (na == null)
-    //                na = Netflix.SafeReturnUserInfo();
-    //            if (na != null)
-    //            {
-    //                tokenSecret = na.TokenSecret;
-    //                extraParams.Add("oauth_token", na.Token);
-    //            }
-    //        }
-
-    //        NetflixId = AsyncHelpers.GetIdFromUrl(NetflixId);
-
-    //        String url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-    //            NetflixLogin.ConsumerKey,
-    //            String.Format(NetflixConstants.SeriesSynopsis, NetflixId),
-    //            "GET",
-    //            tokenSecret,
-    //            extraParams);
-
-    //        XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
-
-    //        return (String)doc.Element("synopsis");
-    //    }
-    //}
 
 }

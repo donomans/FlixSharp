@@ -47,9 +47,13 @@ namespace FlixSharp
         }
         #endregion
 
-        #region On Demand Loading stuf
+        #region On Demand Loading stuff
         private static Boolean _FillObjectsOnDemand = true;
-        internal static Boolean FillObjectsOnDemand { get { return _FillObjectsOnDemand; } }
+        public static Boolean FillObjectsOnDemand { get { return _FillObjectsOnDemand; } }
+        #endregion
+        #region On User Behalf global
+        private static Boolean _OnUserBehalf = true;
+        public static Boolean OnUserBehalf { get { return _OnUserBehalf; } }
         #endregion
 
         /// <summary>
@@ -74,6 +78,8 @@ namespace FlixSharp
             if (_GetUserInfo == null)
                 _GetUserInfo = GetUserInfo;
         }
+
+
 
         public static NetflixSearch Search { get { return search; } }
         private static NetflixSearch search = new NetflixSearch();

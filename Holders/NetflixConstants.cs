@@ -27,6 +27,7 @@ namespace FlixSharp.Constants
         public const String MoviesFormatAvailability = "http://api-public.netflix.com/catalog/titles/movies/{0}/format_availability";
         public const String MoviesScreenFormat = "http://api-public.netflix.com/catalog/titles/movies/{0}/screen_formats";
         public const String MoviesAwards = "http://api-public.netflix.com/catalog/titles/movies/{0}/awards";
+        public const String MoviesBonusMaterials = "http://api-public.netflix.com/catalog/titles/movies/{0}/bonus_materials";
 
         public const String SeriesBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}";
         public const String SeriesSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/similars";
@@ -40,6 +41,7 @@ namespace FlixSharp.Constants
         public const String SeriesFormatAvailability = "http://api-public.netflix.com/catalog/titles/series/{0}/format_availability";
         public const String SeriesScreenFormat = "http://api-public.netflix.com/catalog/titles/series/{0}/screen_formats";
         public const String SeriesAwards = "http://api-public.netflix.com/catalog/titles/series/{0}/awards";
+        public const String SeriesBonusMaterials = "http://api-public.netflix.com/catalog/titles/series/{0}/bonus_materials";
 
         public const String PeopleBaseInfo = "http://api-public.netflix.com/catalog/people/{0}";
         public const String PeopleFilmography = "http://api-public.netflix.com/catalog/people/{0}/filmography";
@@ -51,7 +53,9 @@ namespace FlixSharp.Constants
             public const String CategoryGenre = "http://api-public.netflix.com/categories/genres";
             public const String CategoryMpaaRating = "http://api-public.netflix.com/categories/mpaa_ratings";
             public const String CategoryTvRating = "http://api-public.netflix.com/categories/tv_ratings";
-            
+
+            public const String TitleOfficialUrl = "http://schemas.netflix.com/catalog/titles/official_url";
+
             public const String TitlesSynopsis = "http://schemas.netflix.com/catalog/titles/synopsis";
 
             public const String LinkCast = "http://schemas.netflix.com/catalog/people.cast";

@@ -19,9 +19,9 @@ namespace FlixSharp.Holders
         {
             foreach (Title m in movies)
                 if (_movies.ContainsKey(m.Id))
-                    _movies[m.Id] = m.AddParent(this);
+                    _movies[m.Id] = m;//.AddParent(this);
                 else
-                    _movies.Add(m.Id, m.AddParent(this));
+                    _movies.Add(m.Id, m);//.AddParent(this));
         }
 
         public IEnumerator<Title> GetEnumerator()

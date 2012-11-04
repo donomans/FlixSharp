@@ -13,7 +13,7 @@ namespace FlixSharp.Holders
         public Person(PersonExpansion Completeness)
         {
             completeness = Completeness;
-            _Parents = new HashSet<People>();
+            //_Parents = new HashSet<People>();
         }
 
         public ResultType Type { get { return ResultType.Person; } }
@@ -49,19 +49,18 @@ namespace FlixSharp.Holders
         #region fill
         private async Task FillOutPerson()
         {
-            ///take the
         }
 
-        /// <summary>
-        /// Used for lazy loading ?
-        /// </summary>
-        private HashSet<People> _Parents { get; set; }
-        internal Person AddParent(People parent)
-        {
-            if (!_Parents.Contains(parent))
-                _Parents.Add(parent);
-            return this;
-        }
+        ///// <summary>
+        ///// Used for lazy loading ?
+        ///// </summary>
+        //private HashSet<People> _Parents { get; set; }
+        //internal Person AddParent(People parent)
+        //{
+        //    if (!_Parents.Contains(parent))
+        //        _Parents.Add(parent);
+        //    return this;
+        //}
         #endregion
     }
 }

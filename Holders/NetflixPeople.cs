@@ -14,9 +14,9 @@ namespace FlixSharp.Holders
         {
             foreach (Person p in people)
                 if (_people.ContainsKey(p.Id))
-                    _people[p.Id] = p.AddParent(this);
+                    _people[p.Id] = p;//.AddParent(this);
                 else
-                    _people.Add(p.Id, p.AddParent(this));
+                    _people.Add(p.Id, p);//.AddParent(this));
         }
 
         public Person Find(String id)

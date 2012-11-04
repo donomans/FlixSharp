@@ -163,7 +163,7 @@ namespace FlixSharp.Holders
         public Int32? Year;
         public AwardType Type;
         public Boolean Winner;
-        public String PersonId;
+        public String PersonIdUrl;
         public String AwardName;
     }
 
@@ -171,7 +171,9 @@ namespace FlixSharp.Holders
     {
         AFI,
         Baftas,
-        Academy_Awards,
-        Razzie
+        AcademyAwards,
+        Razzie,
+        Time,
+        GoldenGlobeAwards
     }
 }
