@@ -138,7 +138,8 @@ namespace FlixSharp.Holders
         Movie,
         Series,
         SeriesSeason,
-        Programs
+        Programs,
+        People
     }
 
     public enum MpaaRating

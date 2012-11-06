@@ -12,7 +12,10 @@ namespace FlixSharp.Holders
 
         public Title Find(String id)
         {
-            return _movies[id];
+            if (_movies.ContainsKey(id))
+                return _movies[id];
+            else
+                return null;
         }
 
         public void AddRange(IEnumerable<Title> movies)

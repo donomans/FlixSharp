@@ -32,6 +32,10 @@ namespace FlixSharp.Queries
                         else
                             TitleType = NetflixType.Series;
                     }
+                    else if (NetflixId.Contains("people"))
+                    {
+                        TitleType = NetflixType.People;
+                    }
                     else
                         TitleType = NetflixType.Programs;
 
@@ -917,14 +921,9 @@ namespace FlixSharp.Queries
             String url = "";
             switch (TitleType)
             {
-                case NetflixType.Movie:
+                case NetflixType.People:
                     url = String.Format(NetflixConstants.PeopleBaseInfo, NetflixId);
                     break;
-                case NetflixType.Series:
-                    url = String.Format(NetflixConstants.PeopleBaseInfo, NetflixId);
-                    break;
-                case NetflixType.SeriesSeason:
-                case NetflixType.Programs:
                 default: return null;
             }
 
@@ -937,7 +936,7 @@ namespace FlixSharp.Queries
 
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
             Person p = (from person
-                            in (await doc).Element("people").Elements("person")
+                            in (await doc).Elements("person")
                         select new Person(PersonExpansion.Minimal)
                         {
                             IdUrl = person.Element("id").Value,
@@ -979,14 +978,9 @@ namespace FlixSharp.Queries
             String url = "";
             switch (TitleType)
             {
-                case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesSimilars, NetflixId);
+                case NetflixType.People:
+                    url = String.Format(NetflixConstants.PeopleFilmography, NetflixId);
                     break;
-                case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesSimilars, NetflixId);
-                    break;
-                case NetflixType.SeriesSeason:
-                case NetflixType.Programs:
                 default: return null;
             }
 

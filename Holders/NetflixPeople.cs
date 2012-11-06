@@ -21,7 +21,10 @@ namespace FlixSharp.Holders
 
         public Person Find(String id)
         {
-            return _people[id];
+            if (_people.ContainsKey(id))
+                return _people[id];
+            else
+                return null;
         }
 
         public IEnumerator<Person> GetEnumerator()
