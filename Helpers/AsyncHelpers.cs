@@ -17,8 +17,6 @@ namespace FlixSharp.Async
 {
     internal class AsyncHelpers
     {
-     
-   
         ///10 per second seems to be a liberal estimate by Netflix - they are strict....
         ///seems to trigger failures unless its throttled quite a bit?
         public static SlowLeak Leak = new SlowLeak(8, 1000); 
@@ -28,6 +26,7 @@ namespace FlixSharp.Async
             using (WebClient wc = new WebClient())
             {
                 wc.Headers.Add("user-agent", "FilmTrove");
+                ///wc.Headers.Add("accept-encoding", "gzip");
                 try
                 {
                     Leak.CheckLeak();
@@ -38,7 +37,6 @@ namespace FlixSharp.Async
                 {
                     if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_QPS")
                     {
-                        Thread.Sleep(150);
                         throw new NetflixThrottleException(ex);
                     }
                     ///possibly throw a throttled exception or something more valid?
@@ -57,7 +55,10 @@ namespace FlixSharp.Async
             catch (NetflixThrottleException)
             { retry = true; }
             if (retry)
+            {
+                Thread.Sleep(150);
                 return await LoadXDocumentAsync(url);
+            }
             else
                 throw new Exception("wat.");
         }

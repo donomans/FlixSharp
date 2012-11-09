@@ -941,7 +941,11 @@ namespace FlixSharp.Queries
                         {
                             IdUrl = person.Element("id").Value,
                             Name = person.Element("name").Value,
-                            Bio = (String)person.Element("bio")
+                            Bio = (String)person.Element("bio"),
+                            NetflixSiteUrl = (from webpage
+                                    in person.Elements("link")
+                                   where (String)webpage.Attribute("title") == "web page"
+                                   select (String)webpage.Attribute("href")).FirstOrDefault()
                         }).SingleOrDefault();
             return p;
         }

@@ -37,6 +37,7 @@ namespace FlixSharp.Holders
         }
         private String id = "";
         public String IdUrl { get; set; }
+        public String NetflixSiteUrl { get; set; }
         public String Name { get; set; }
         public String Bio { get; set; }
         #endregion
