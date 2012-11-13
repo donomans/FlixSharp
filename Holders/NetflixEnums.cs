@@ -175,6 +175,7 @@ namespace FlixSharp.Holders
         AcademyAwards,
         Razzie,
         Time,
-        GoldenGlobeAwards
+        GoldenGlobeAwards,
+        IndependentSpiritAwards
     }
 }
