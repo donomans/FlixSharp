@@ -94,9 +94,12 @@ namespace FlixSharp.Queries
 
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
 
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            ///Need to come up with a better way to reduce the regex work that happens on these calls
+            ///Should only do it once and then pass the result in
+            //var id = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             var nfm = GetBaseTitle(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+            //var nfm = GetBaseTitle(id, NetflixAccount, OnUserBehalf, TitleType);
 
             ///4) get synopsis
             var synopsis = GetSynopsis(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
@@ -152,7 +155,7 @@ namespace FlixSharp.Queries
 
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
 
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            //NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             var nfm = GetBaseTitle(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
@@ -190,7 +193,7 @@ namespace FlixSharp.Queries
 
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
 
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            //NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             var nfm = GetBaseTitle(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
@@ -251,20 +254,22 @@ namespace FlixSharp.Queries
         private async Task<Title> GetBaseTitle(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesBaseInfo, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesBaseInfo, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesBaseInfo, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesBaseInfo, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsBaseInfo, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -339,20 +344,22 @@ namespace FlixSharp.Queries
         private async Task<People> GetActors(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesCast, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesCast, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesCast, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesCast, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsCast, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -403,20 +410,22 @@ namespace FlixSharp.Queries
         private async Task<People> GetDirectors(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesDirectors, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesDirectors, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesDirectors, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesDirectors, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsDirectors, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -466,21 +475,20 @@ namespace FlixSharp.Queries
         private async Task<List<Award>> GetAwards(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
-
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesAwards, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesAwards, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesAwards, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesAwards, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -555,20 +563,22 @@ namespace FlixSharp.Queries
         private async Task<List<FormatAvailability>> GetFormatAvailability(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesFormatAvailability, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesFormatAvailability, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesFormatAvailability, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesFormatAvailability, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsFormatAvailability, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -621,20 +631,22 @@ namespace FlixSharp.Queries
         private async Task<String> GetSynopsis(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesSynopsis, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesSynopsis, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesSynopsis, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesSynopsis, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsSynopsis, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -676,20 +688,22 @@ namespace FlixSharp.Queries
         private async Task<List<ScreenFormats>> GetScreenFormats(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesScreenFormat, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesScreenFormat, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesScreenFormat, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesScreenFormat, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsScreenFormat, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -745,7 +759,7 @@ namespace FlixSharp.Queries
         private async Task<List<Title>> GetSimilarTitles(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, Int32 Limit = 10, Int32 Page = 0, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             ExtraParams.Add("start_index", Page.ToString());
             ExtraParams.Add("max_results", Limit.ToString());
@@ -754,14 +768,16 @@ namespace FlixSharp.Queries
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesSimilars, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesSimilars, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesSimilars, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesSimilars, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsSimilars, idtup.Id, idtup.SeasonId);
+                    break;
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -781,15 +797,48 @@ namespace FlixSharp.Queries
                                 IdUrl = movie.Element("id").Value,
                                 Year = (Int32)movie.Element("release_year"),
                                 FullTitle = (String)movie.Element("title").Attribute("regular"),
-                                AverageRating = (Single)movie.Element("average_rating"),
                                 ShortTitle = (String)movie.Element("title").Attribute("short"),
                                 BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
                                 BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-                                NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
-                                    movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
-                                    movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
-                                        NetflixType.SeriesSeason : NetflixType.Series)
+                                Rating = new Rating((from mpaa
+                                                    in movie.Elements("category")
+                                                     where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
+                                                     select mpaa) ??
+                                                    (from tv
+                                                    in movie.Elements("category")
+                                                     where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
+                                                     select tv)),
+                                AverageRating = (Single)movie.Element("average_rating"),
+                                RunTime = (Int32?)movie.Element("runtime"),
+                                Genres = new List<String>(from genres
+                                                          in movie.Elements("category")
+                                                          where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                                                          select (String)genres.Attribute("term")),
+                                NetflixSiteUrl = (from webpage
+                                                  in movie.Elements("link")
+                                                  where (String)webpage.Attribute("title") == "web page"
+                                                  select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                OfficialWebsite = (from webpage
+                                                   in movie.Elements("link")
+                                                   where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                                   select (String)webpage.Attribute("href")).FirstOrDefault()
                             });
+            //movies.AddRange(from movie
+            //                in (await doc).Element("similars").Elements("similars_item")
+            //                select new Title(TitleExpansion.Minimal)
+            //                {
+            //                    IdUrl = movie.Element("id").Value,
+            //                    Year = (Int32)movie.Element("release_year"),
+            //                    FullTitle = (String)movie.Element("title").Attribute("regular"),
+            //                    AverageRating = (Single)movie.Element("average_rating"),
+            //                    ShortTitle = (String)movie.Element("title").Attribute("short"),
+            //                    BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
+            //                    BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
+            //                    NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
+            //                        movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
+            //                        movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
+            //                            NetflixType.SeriesSeason : NetflixType.Series)
+            //                });
             return movies;
         }
 
@@ -820,21 +869,20 @@ namespace FlixSharp.Queries
         private async Task<List<String>> GetBonusMaterials(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
-
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
 
             String url = "";
             switch (TitleType)
             {
                 case NetflixType.Movie:
-                    url = String.Format(NetflixConstants.MoviesBonusMaterials, NetflixId);
+                    url = String.Format(NetflixConstants.MoviesBonusMaterials, idtup.Id);
                     break;
                 case NetflixType.Series:
-                    url = String.Format(NetflixConstants.SeriesBonusMaterials, NetflixId);
+                    url = String.Format(NetflixConstants.SeriesBonusMaterials, idtup.Id);
                     break;
                 case NetflixType.SeriesSeason:
                 case NetflixType.Programs:
-                default: return null;
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
             url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
@@ -858,6 +906,66 @@ namespace FlixSharp.Queries
                 return null;
             }
         }
+
+
+        public async Task<List<String>> GetDiscs(String NetflixIdUrl, Boolean OnUserBehalf)
+        {
+            return await GetDiscs(NetflixIdUrl, OnUserBehalf, null);
+        }
+        public async Task<List<String>> GetDiscs(String NetflixId, NetflixType TitleType, Boolean OnUserBehalf = true)
+        {
+            return await GetDiscs(NetflixId, OnUserBehalf, TitleType);
+        }
+        public async Task<List<String>> GetDiscs(String NetflixId, Account NetflixAccount, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
+            NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, NetflixAccount, out TokenSecret);
+
+            return await GetDiscs(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        public async Task<List<String>> GetDiscs(String NetflixId, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        {
+            NetflixLogin.CheckInformationSet();
+            String TokenSecret;
+            Dictionary<String, String> extraParams = NetflixFill.GetTokens(OnUserBehalf, out TokenSecret);
+
+            return await GetDiscs(NetflixId, extraParams, TokenSecret, TitleType);
+        }
+        private async Task<List<String>> GetDiscs(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
+        {
+            TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
+
+            String url = "";
+            switch (TitleType)
+            {
+                case NetflixType.Series:
+                    url = String.Format(NetflixConstants.SeriesDiscs, idtup.Id);
+                    break;
+                case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsDiscs, idtup.Id, idtup.SeasonId);
+                    break;
+                case NetflixType.Movie:
+                case NetflixType.Programs:
+                default: throw new Exception("Invalid request for TitleType: " + TitleType);
+            }
+
+            url = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                url,
+                "GET",
+                TokenSecret,
+                ExtraParams);
+            
+            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+
+            var discs = from movie
+                        in (await doc).Elements("bonus_materials")
+                        select (String)movie.Element("link").Attribute("href");
+            return discs.ToList();
+            
+        }
     }
     public class FillPeople
     {
@@ -875,7 +983,8 @@ namespace FlixSharp.Queries
 
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
 
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
+            NetflixId = idtup.Id;
 
             ///1) get base
             var nfp = GetBasePerson(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
@@ -916,7 +1025,8 @@ namespace FlixSharp.Queries
         private async Task<Person> GetBasePerson(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
+            NetflixId = idtup.Id;
 
             String url = "";
             switch (TitleType)
@@ -977,7 +1087,8 @@ namespace FlixSharp.Queries
         private async Task<List<Title>> GetFilmography(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
-            NetflixId = GeneralHelpers.GetIdFromUrl(NetflixId);
+            var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
+            NetflixId = idtup.Id;
 
             String url = "";
             switch (TitleType)

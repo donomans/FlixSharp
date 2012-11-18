@@ -30,7 +30,7 @@ namespace FlixSharp.Holders
                     return id;
                 else
                 {
-                    id = GeneralHelpers.GetIdFromUrl(IdUrl);
+                    id = GeneralHelpers.GetIdFromUrl(IdUrl).Id;
                     return id;
                 }
             }
@@ -48,9 +48,9 @@ namespace FlixSharp.Holders
         #endregion
 
         #region fill
-        private async Task FillOutPerson()
-        {
-        }
+        //private async Task FillOutPerson()
+        //{
+        //}
 
         ///// <summary>
         ///// Used for lazy loading ?

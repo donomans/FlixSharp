@@ -29,12 +29,30 @@ namespace FlixSharp.Holders
                     return id;
                 else
                 {
-                    id = GeneralHelpers.GetIdFromUrl(IdUrl);
+                    var tup = GeneralHelpers.GetIdFromUrl(IdUrl);
+                    id = tup.Id;
+                    seasonid = tup.SeasonId;
                     return id;
                 }
             }
         }
         private String id = "";
+        public String SeasonId
+        {
+            get
+            {
+                if (seasonid != "")
+                    return seasonid;
+                else
+                {
+                    var tup = GeneralHelpers.GetIdFromUrl(IdUrl);
+                    id = tup.Id;
+                    seasonid = tup.SeasonId;
+                    return seasonid;
+                }
+            }
+        }
+        private String seasonid = "";
         public String IdUrl { get; set; }
 
         public NetflixType NetflixType { get; set; }
@@ -71,27 +89,27 @@ namespace FlixSharp.Holders
         #endregion
 
         #region fill
-        private async Task FillOutMovie()
-        {
-            if (Netflix.FillObjectsOnDemand)
-            {///change this to the getters -- load the specific one and then await load all the other ones in the same level (Expanded or Complete)
-                //switch (completeness)
-                //{
-                //    case TitleExpansion.Expanded:
-                //        Title e = await Netflix.Fill.Titles.GetExpandedTitle(this.IdUrl, Netflix.OnUserBehalf);
-                //        ///fill the title out now
-                //        this.Synopsis = e.Synopsis;
-                //        break;
-                //    case TitleExpansion.Complete:
-                //        Title c = null;
-                //        if(completeness == TitleExpansion.Expanded)
-                //            c = await Netflix.Fill.Titles.GetCompleteTitle(this.IdUrl, Netflix.OnUserBehalf);
-                //        else
-                //            c = await Netflix.Fill.Titles.GetCompleteTitleFromExpanded(this.IdUrl, Netflix.OnUserBehalf);
-                //        break;
-                //}
-            }
-        }
+        //private async Task FillOutMovie()
+        //{
+        //    if (Netflix.FillObjectsOnDemand)
+        //    {///change this to the getters -- load the specific one and then await load all the other ones in the same level (Expanded or Complete)
+        //        //switch (completeness)
+        //        //{
+        //        //    case TitleExpansion.Expanded:
+        //        //        Title e = await Netflix.Fill.Titles.GetExpandedTitle(this.IdUrl, Netflix.OnUserBehalf);
+        //        //        ///fill the title out now
+        //        //        this.Synopsis = e.Synopsis;
+        //        //        break;
+        //        //    case TitleExpansion.Complete:
+        //        //        Title c = null;
+        //        //        if (completeness == TitleExpansion.Expanded)
+        //        //            c = await Netflix.Fill.Titles.GetCompleteTitle(this.IdUrl, Netflix.OnUserBehalf);
+        //        //        else
+        //        //            c = await Netflix.Fill.Titles.GetCompleteTitleFromExpanded(this.IdUrl, Netflix.OnUserBehalf);
+        //        //        break;
+        //        //}
+        //    }
+        //}
 
         ///// <summary>
         ///// Used for lazy loading ?

@@ -32,9 +32,9 @@ namespace FlixSharp.Constants
         public const String SeriesBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}";
         public const String SeriesSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/similars";
         public const String SeriesDiscs = "http://api-public.netflix.com/catalog/titles/series/{0}/discs";
-        public const String SeriesSeries = "";
-        public const String SeriesSeasons = "";
-        public const String SeriesProgram = "";
+        //public const String SeriesSeries = "";
+        //public const String SeriesSeasons = "";
+        //public const String SeriesProgram = "";
         public const String SeriesSynopsis = "http://api-public.netflix.com/catalog/titles/series/{0}/synopsis";
         public const String SeriesCast = "http://api-public.netflix.com/catalog/titles/series/{0}/cast";
         public const String SeriesDirectors = "http://api-public.netflix.com/catalog/titles/series/{0}/directors";
@@ -42,6 +42,16 @@ namespace FlixSharp.Constants
         public const String SeriesScreenFormat = "http://api-public.netflix.com/catalog/titles/series/{0}/screen_formats";
         public const String SeriesAwards = "http://api-public.netflix.com/catalog/titles/series/{0}/awards";
         public const String SeriesBonusMaterials = "http://api-public.netflix.com/catalog/titles/series/{0}/bonus_materials";
+
+        public const String SeriesSeasonsBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/";
+        public const String SeriesSeasonsCast = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/cast";
+        public const String SeriesSeasonsDirectors = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/directors";
+        public const String SeriesSeasonsFormatAvailability = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/format_availability";
+        public const String SeriesSeasonsScreenFormat = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/screen_formats";
+        public const String SeriesSeasonsSynopsis = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/synopsis";
+        public const String SeriesSeasonsSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/similars";
+        public const String SeriesSeasonsDiscs = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/discs";
+
 
         public const String PeopleBaseInfo = "http://api-public.netflix.com/catalog/people/{0}";
         public const String PeopleFilmography = "http://api-public.netflix.com/catalog/people/{0}/filmography";

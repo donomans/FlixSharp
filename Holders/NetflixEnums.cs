@@ -64,6 +64,9 @@ namespace FlixSharp.Holders
                         case "PG":
                             MpaaRating = Holders.MpaaRating.PG;
                             break;
+                        case "NC-17":
+                            MpaaRating = Holders.MpaaRating.NC17;
+                            break;
                         case "NR":
                         case "UR":
                             MpaaRating = Holders.MpaaRating.Unrated;
@@ -145,6 +148,7 @@ namespace FlixSharp.Holders
     public enum MpaaRating
     {
         Unrated,
+        NC17,
         R,
         PG13,
         PG,
@@ -177,5 +181,11 @@ namespace FlixSharp.Holders
         Time,
         GoldenGlobeAwards,
         IndependentSpiritAwards
+    }
+
+    public struct NetflixId
+    {
+        public String Id;
+        public String SeasonId;
     }
 }

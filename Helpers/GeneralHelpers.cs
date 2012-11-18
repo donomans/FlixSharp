@@ -35,9 +35,14 @@ namespace FlixSharp.Helpers
 
 
 
-        public static String GetIdFromUrl(String NetflixIdUrl)
+        public static NetflixId GetIdFromUrl(String NetflixIdUrl)
         {
-            return Regex.Match(NetflixIdUrl, "[0-9]{4,10}").Value;
+            MatchCollection m = Regex.Matches(NetflixIdUrl, "[0-9]{4,10}");
+            var r = m.Cast<Match>().Select(f=>f.Value).Take(2);
+            return new NetflixId() { Id = r.First(), SeasonId = r.Count() > 1 ? r.LastOrDefault() : "" };
+            //var r = m.Cast<Match>().Select(r => r.Value);
+            //var r = from regex in m.Cast<Match>().AsQueryable() select regex.Value;
+            //return Regex.Match(NetflixIdUrl, "[0-9]{4,10}").Value;
             ///Netflix IDs seem to be 5-9 characters, but there may be some 4 character or 10 character that I don't know about
         }
     }

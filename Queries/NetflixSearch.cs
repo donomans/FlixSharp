@@ -76,18 +76,26 @@ namespace FlixSharp.Queries
                                         BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
                                         Rating = new Rating((from mpaa
                                                             in movie.Elements("category")
-                                                             where mpaa.Attribute("scheme").Value == "http://api-public.netflix.com/categories/mpaa_ratings"
+                                                             where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
                                                              select mpaa) ??
                                                             (from tv
                                                             in movie.Elements("category")
-                                                             where tv.Attribute("scheme").Value == "http://api-public.netflix.com/categories/tv_ratings"
+                                                             where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
                                                              select tv)),
                                         AverageRating = (Single)movie.Element("average_rating"),
                                         RunTime = (Int32?)movie.Element("runtime"),
-                                        NetflixType = (movie.Element("id").Value.Contains("movie") ? NetflixType.Movie :
-                                            movie.Element("id").Value.Contains("programs") ? NetflixType.Programs :
-                                            movie.Element("id").Value.Contains("series") && movie.Element("id").Value.Contains("season") ?
-                                                NetflixType.SeriesSeason : NetflixType.Series)
+                                        Genres = new List<String>(from genres
+                                                                  in movie.Elements("category")
+                                                                  where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                                                                  select (String)genres.Attribute("term")),
+                                        NetflixSiteUrl = (from webpage
+                                                          in movie.Elements("link")
+                                                          where (String)webpage.Attribute("title") == "web page"
+                                                          select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                        OfficialWebsite = (from webpage
+                                                           in movie.Elements("link")
+                                                           where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                                           select (String)webpage.Attribute("href")).FirstOrDefault()
                                     });
                     break;
                 case TitleExpansion.Expanded:
