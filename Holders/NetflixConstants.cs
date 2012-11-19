@@ -32,9 +32,6 @@ namespace FlixSharp.Constants
         public const String SeriesBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}";
         public const String SeriesSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/similars";
         public const String SeriesDiscs = "http://api-public.netflix.com/catalog/titles/series/{0}/discs";
-        //public const String SeriesSeries = "";
-        //public const String SeriesSeasons = "";
-        //public const String SeriesProgram = "";
         public const String SeriesSynopsis = "http://api-public.netflix.com/catalog/titles/series/{0}/synopsis";
         public const String SeriesCast = "http://api-public.netflix.com/catalog/titles/series/{0}/cast";
         public const String SeriesDirectors = "http://api-public.netflix.com/catalog/titles/series/{0}/directors";

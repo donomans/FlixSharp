@@ -134,7 +134,7 @@ namespace FlixSharp.Queries
             if(title.HasBonusMaterials)
                 bonus = GetBonusMaterials(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
             ///15) discs
-            Task<List<String>> discs = null;
+            Task<List<Title>> discs = null;
             if (title.HasDiscs)
                 discs = GetDiscs(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
@@ -188,7 +188,7 @@ namespace FlixSharp.Queries
             Task<List<String>> bonus = null;
             if (title.HasBonusMaterials)
                 bonus = GetBonusMaterials(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
-            Task<List<String>> discs = null;
+            Task<List<Title>> discs = null;
             if (title.HasDiscs)
                 discs = GetDiscs(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
@@ -989,16 +989,15 @@ namespace FlixSharp.Queries
             }
         }
 
-
-        public async Task<List<String>> GetDiscs(String NetflixIdUrl, Boolean OnUserBehalf)
+        public async Task<List<Title>> GetDiscs(String NetflixIdUrl, Boolean OnUserBehalf)
         {
             return await GetDiscs(NetflixIdUrl, OnUserBehalf, null);
         }
-        public async Task<List<String>> GetDiscs(String NetflixId, NetflixType TitleType, Boolean OnUserBehalf = true)
+        public async Task<List<Title>> GetDiscs(String NetflixId, NetflixType TitleType, Boolean OnUserBehalf = true)
         {
             return await GetDiscs(NetflixId, OnUserBehalf, TitleType);
         }
-        public async Task<List<String>> GetDiscs(String NetflixId, Account NetflixAccount, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        public async Task<List<Title>> GetDiscs(String NetflixId, Account NetflixAccount, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
         {
             NetflixLogin.CheckInformationSet();
             String TokenSecret;
@@ -1006,7 +1005,7 @@ namespace FlixSharp.Queries
 
             return await GetDiscs(NetflixId, extraParams, TokenSecret, TitleType);
         }
-        public async Task<List<String>> GetDiscs(String NetflixId, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
+        public async Task<List<Title>> GetDiscs(String NetflixId, Boolean OnUserBehalf = true, NetflixType? TitleType = null)
         {
             NetflixLogin.CheckInformationSet();
             String TokenSecret;
@@ -1014,7 +1013,7 @@ namespace FlixSharp.Queries
 
             return await GetDiscs(NetflixId, extraParams, TokenSecret, TitleType);
         }
-        private async Task<List<String>> GetDiscs(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
+        private async Task<List<Title>> GetDiscs(String NetflixId, Dictionary<String, String> ExtraParams, String TokenSecret, NetflixType? TitleType = null)
         {
             TitleType = NetflixFill.GetNetflixType(NetflixId, TitleType);
             var idtup = GeneralHelpers.GetIdFromUrl(NetflixId);
@@ -1042,17 +1041,51 @@ namespace FlixSharp.Queries
             
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
 
+            List<Title> movies = new List<Title>();
             try
             {
-                var discs = from movie
-                            in (await doc).Descendants("catalog_title")
-                            select movie.Element("id").Value;
-                return discs.ToList();
+                movies.AddRange(from movie
+                                in (await doc).Descendants("catalog_title")
+                                select new Title(TitleExpansion.Minimal)
+                                {
+                                    IdUrl = movie.Element("id").Value,
+                                    Year = (Int32)movie.Element("release_year"),
+                                    FullTitle = (String)movie.Element("title").Attribute("regular"),
+                                    ShortTitle = (String)movie.Element("title").Attribute("short"),
+                                    BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
+                                    BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
+                                    Rating = new Rating((from mpaa
+                                                        in movie.Elements("category")
+                                                         where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
+                                                         select mpaa) ??
+                                                        (from tv
+                                                        in movie.Elements("category")
+                                                         where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
+                                                         select tv)),
+                                    //AverageRating = (Single)movie.Element("average_rating"), ///discs don't have ratings
+                                    RunTime = (Int32?)movie.Element("runtime"),
+                                    Genres = new List<String>(from genres
+                                                              in movie.Elements("category")
+                                                              where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                                                              select (String)genres.Attribute("term")),
+                                    NetflixSiteUrl = (from webpage
+                                                      in movie.Elements("link")
+                                                      where (String)webpage.Attribute("title") == "web page"
+                                                      select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                    OfficialWebsite = (from webpage
+                                                       in movie.Elements("link")
+                                                       where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                                       select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                    HasAwards = false,
+                                    HasBonusMaterials = false,
+                                    HasDiscs = false
+                                });
             }
             catch (Exception ex)
             {
                 throw new NetflixApiException(ex);
             }
+            return movies;
         }
     }
     public class FillPeople

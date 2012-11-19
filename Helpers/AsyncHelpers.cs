@@ -25,8 +25,6 @@ namespace FlixSharp.Async
         {
             using (WebClient wc = new WebClient())
             {
-                wc.Headers.Add("user-agent", "FilmTrove");
-                ///wc.Headers.Add("accept-encoding", "gzip");
                 try
                 {
                     Leak.CheckLeak();
@@ -59,8 +57,7 @@ namespace FlixSharp.Async
                 Thread.Sleep(150);
                 return await LoadXDocumentAsync(url);
             }
-            else
-                throw new Exception("wat.");
+            return null;
         }
 
         public static async Task<IEnumerable<Title>> GetExpandedMovieDetails(XDocument doc, Boolean OnUserBehalf = true)

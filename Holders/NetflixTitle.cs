@@ -18,6 +18,10 @@ namespace FlixSharp.Holders
             Awards = new List<Award>();
             SimilarTitles = new List<Title>();
             BonusMaterials = new List<String>();
+            Discs = new List<Title>();
+            HasAwards = false;
+            HasBonusMaterials = false;
+            HasDiscs = false;
         }
         public Title(TitleExpansion Completeness)
             : this()
@@ -98,7 +102,7 @@ namespace FlixSharp.Holders
             public List<Title> SimilarTitles { get; set; } 
             //public List<Title> RelatedTitles { get; set; }
             public List<String> BonusMaterials { get; set; }
-            public List<String> Discs { get; set; }
+            public List<Title> Discs { get; set; }
         #endregion
 
         #region fill
