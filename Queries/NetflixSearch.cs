@@ -40,27 +40,42 @@ namespace FlixSharp.Queries
                     extraParams.Add("oauth_token", na.Token);
                 }
             }
-            
-            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
-                NetflixLogin.ConsumerKey,
-                NetflixConstants.CatalogTitleSearchUrl,
-                "GET",
-                tokenSecret,
-                extraParams);
 
-            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
-            
             String personurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
                 NetflixLogin.ConsumerKey,
                 NetflixConstants.CatalogPeopleSearcUrl,
                 "GET",
                 tokenSecret,
                 extraParams);
-
             var persondoc = AsyncHelpers.LoadXDocumentAsync(personurl);
-            
-            Titles movies = new Titles();
 
+            String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
+                NetflixLogin.ConsumerKey,
+                NetflixConstants.CatalogTitleSearchUrl,
+                "GET",
+                tokenSecret,
+                extraParams);
+            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
+            
+            People people = new People();
+            switch (PersonExpansionLevel)
+            {
+                case PersonExpansion.Minimal:
+                    people.AddRange(from person
+                                    in (await persondoc).Descendants("person")
+                                    select new Person(PersonExpansion.Minimal)
+                                    {
+                                        IdUrl = person.Element("id").Value,
+                                        Name = person.Element("name").Value,
+                                        Bio = (String)person.Element("bio")
+                                    });
+                    break;
+                case PersonExpansion.Complete:
+                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
+                    break;
+            }
+
+            Titles movies = new Titles();
             switch (TitleExpansionLevel)
             {
                 case TitleExpansion.Minimal:
@@ -105,28 +120,6 @@ namespace FlixSharp.Queries
                     movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(await moviedoc));
                     break;
             }
-
-            
-
-            People people = new People();
-
-            switch (PersonExpansionLevel)
-            {
-                case PersonExpansion.Minimal:
-                    people.AddRange(from person
-                                    in (await persondoc).Descendants("person")
-                                    select new Person(PersonExpansion.Minimal)
-                                    {
-                                        IdUrl = person.Element("id").Value,
-                                        Name = person.Element("name").Value,
-                                        Bio = (String)person.Element("bio")
-                                    });
-                    break;
-                case PersonExpansion.Complete:
-                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
-                    break;
-            }
-
 
             SearchResults sr = new SearchResults();
             sr.MovieResults = movies;

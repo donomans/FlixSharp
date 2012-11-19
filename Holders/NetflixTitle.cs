@@ -10,10 +10,19 @@ namespace FlixSharp.Holders
 {
     public class Title : IResult
     {
+        public Title()
+        {
+            Genres = new List<String>();
+            ScreenFormats = new List<ScreenFormats>();
+            Formats = new List<FormatAvailability>();
+            Awards = new List<Award>();
+            SimilarTitles = new List<Title>();
+            BonusMaterials = new List<String>();
+        }
         public Title(TitleExpansion Completeness)
+            : this()
         {
             completeness = Completeness;
-            //_Parents = new HashSet<Titles>();
         }
 
         public ResultType Type { get { return ResultType.Movie; } }
@@ -69,6 +78,9 @@ namespace FlixSharp.Holders
             public Rating Rating { get; set; }
             public String NetflixSiteUrl { get; set; }
             public String OfficialWebsite { get; set; }
+            public Boolean HasAwards { get; set; }
+            public Boolean HasBonusMaterials { get; set; }
+            public Boolean HasDiscs { get; set; }
         #endregion
 
         
@@ -86,6 +98,7 @@ namespace FlixSharp.Holders
             public List<Title> SimilarTitles { get; set; } 
             //public List<Title> RelatedTitles { get; set; }
             public List<String> BonusMaterials { get; set; }
+            public List<String> Discs { get; set; }
         #endregion
 
         #region fill

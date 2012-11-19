@@ -10,7 +10,12 @@ namespace FlixSharp.Holders
 {
     public class Person : IResult
     {
+        public Person()
+        {
+            Filmography = new List<Title>();
+        }
         public Person(PersonExpansion Completeness)
+            : this()
         {
             completeness = Completeness;
             //_Parents = new HashSet<People>();

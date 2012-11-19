@@ -180,7 +180,8 @@ namespace FlixSharp.Holders
         Razzie,
         Time,
         GoldenGlobeAwards,
-        IndependentSpiritAwards
+        IndependentSpiritAwards,
+        SundanceFilmFestival
     }
 
     public struct NetflixId

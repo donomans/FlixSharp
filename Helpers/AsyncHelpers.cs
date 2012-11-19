@@ -186,7 +186,19 @@ namespace FlixSharp.Async
 
     public class NetflixThrottleException : WebException
     {
-        public NetflixThrottleException(WebException ex) : base("ERR_403_DEVELOPER_OVER_QPS", ex)
+        public NetflixThrottleException(WebException ex) 
+            : base("ERR_403_DEVELOPER_OVER_QPS", ex)
+        {
+        }
+    }
+    public class NetflixApiException : Exception
+    {
+        public NetflixApiException(Exception ex)
+            : base("FlixSharp had some issues - Inner exception contains information", ex)
+        {
+        }
+        public NetflixApiException(String message, Exception ex)
+            : base("FlixSharp had some issues - " + message, ex)
         {
         }
     }

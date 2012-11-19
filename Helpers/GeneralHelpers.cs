@@ -37,7 +37,7 @@ namespace FlixSharp.Helpers
 
         public static NetflixId GetIdFromUrl(String NetflixIdUrl)
         {
-            MatchCollection m = Regex.Matches(NetflixIdUrl, "[0-9]{4,10}");
+            MatchCollection m = Regex.Matches(NetflixIdUrl, "[0-9]{3,10}");
             var r = m.Cast<Match>().Select(f=>f.Value).Take(2);
             return new NetflixId() { Id = r.First(), SeasonId = r.Count() > 1 ? r.LastOrDefault() : "" };
             //var r = m.Cast<Match>().Select(r => r.Value);
