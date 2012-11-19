@@ -303,7 +303,7 @@ namespace FlixSharp.Queries
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
             try
             {
-                return (from movie
+                var m = (from movie
                         in (await doc).Elements("catalog_title")
                         select new Title(TitleExpansion.Minimal)
                         {
@@ -348,6 +348,7 @@ namespace FlixSharp.Queries
                                           where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
                                           select true).FirstOrDefault()
                         }).SingleOrDefault();
+                return m;
             }
             catch (Exception ex)
             {
@@ -979,7 +980,7 @@ namespace FlixSharp.Queries
                 
                 var bonus = from movie
                             in (await doc).Elements("bonus_materials")
-                            select (String)movie.Element("link").Attribute("href");
+                            select movie.Element("link") != null ? (String)movie.Element("link").Attribute("href") : "";
                 return bonus.ToList();
             }
             catch (Exception ex)
