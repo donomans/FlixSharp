@@ -33,9 +33,9 @@ namespace FlixSharp.Queries
                             TitleType = NetflixType.Series;
                     }
                     else if (NetflixId.Contains("people"))
-                    {
                         TitleType = NetflixType.People;
-                    }
+                    else if (NetflixId.Contains("discs"))
+                        TitleType = NetflixType.Discs;
                     else
                         TitleType = NetflixType.Programs;
 
