@@ -91,13 +91,13 @@ namespace FlixSharp.Queries
                                         BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
                                         Rating = new Rating((from mpaa
                                                             in movie.Elements("category")
-                                                             where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
+                                                             where (String)mpaa.Attribute("scheme") == NetflixConstants.Schemas.CategoryMpaaRating
                                                              select mpaa) ??
                                                             (from tv
                                                             in movie.Elements("category")
-                                                             where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
+                                                             where (String)tv.Attribute("scheme") == NetflixConstants.Schemas.CategoryTvRating
                                                              select tv)),
-                                        AverageRating = (Single)movie.Element("average_rating"),
+                                        AverageRating = (Single?)movie.Element("average_rating") ?? 0,
                                         RunTime = (Int32?)movie.Element("runtime"),
                                         Genres = new List<String>(from genres
                                                                   in movie.Elements("category")
@@ -110,7 +110,23 @@ namespace FlixSharp.Queries
                                         OfficialWebsite = (from webpage
                                                            in movie.Elements("link")
                                                            where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
-                                                           select (String)webpage.Attribute("href")).FirstOrDefault()
+                                                           select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                        HasAwards = (from webpage
+                                                     in movie.Elements("link")
+                                                     where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkAwards
+                                                     select true).FirstOrDefault(),
+                                        HasBonusMaterials = (from webpage
+                                                             in movie.Elements("link")
+                                                             where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkBonusMaterials
+                                                             select true).FirstOrDefault(),
+                                        HasDiscs = (from webpage
+                                                    in movie.Elements("link")
+                                                    where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
+                                                    select true).FirstOrDefault(),
+                                        HasLanguages = (from webpage
+                                                        in movie.Elements("link")
+                                                        where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
+                                                        select true).FirstOrDefault()
                                     });
                     break;
                 case TitleExpansion.Expanded:
@@ -175,18 +191,42 @@ namespace FlixSharp.Queries
                                         BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
                                         Rating = new Rating((from mpaa
                                                             in movie.Elements("category")
-                                                             where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
+                                                             where (String)mpaa.Attribute("scheme") == NetflixConstants.Schemas.CategoryMpaaRating
                                                              select mpaa) ??
                                                             (from tv
                                                             in movie.Elements("category")
-                                                             where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
+                                                             where (String)tv.Attribute("scheme") == NetflixConstants.Schemas.CategoryTvRating
                                                              select tv)),
-                                        AverageRating = (Single)movie.Element("average_rating"),
+                                        AverageRating = (Single?)movie.Element("average_rating") ?? 0,
                                         RunTime = (Int32?)movie.Element("runtime"),
                                         Genres = new List<String>(from genres
                                                                   in movie.Elements("category")
                                                                   where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
-                                                                  select (String)genres.Attribute("term"))
+                                                                  select (String)genres.Attribute("term")),
+                                        NetflixSiteUrl = (from webpage
+                                                          in movie.Elements("link")
+                                                          where (String)webpage.Attribute("title") == "web page"
+                                                          select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                        OfficialWebsite = (from webpage
+                                                           in movie.Elements("link")
+                                                           where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                                           select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                        HasAwards = (from webpage
+                                                     in movie.Elements("link")
+                                                     where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkAwards
+                                                     select true).FirstOrDefault(),
+                                        HasBonusMaterials = (from webpage
+                                                             in movie.Elements("link")
+                                                             where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkBonusMaterials
+                                                             select true).FirstOrDefault(),
+                                        HasDiscs = (from webpage
+                                                    in movie.Elements("link")
+                                                    where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
+                                                    select true).FirstOrDefault(),
+                                        HasLanguages = (from webpage
+                                                        in movie.Elements("link")
+                                                        where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
+                                                        select true).FirstOrDefault()
                                     });
                     break;
                 case TitleExpansion.Expanded:

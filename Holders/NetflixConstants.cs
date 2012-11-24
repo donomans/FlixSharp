@@ -28,6 +28,8 @@ namespace FlixSharp.Constants
         public const String MoviesScreenFormat = "http://api-public.netflix.com/catalog/titles/movies/{0}/screen_formats";
         public const String MoviesAwards = "http://api-public.netflix.com/catalog/titles/movies/{0}/awards";
         public const String MoviesBonusMaterials = "http://api-public.netflix.com/catalog/titles/movies/{0}/bonus_materials";
+        public const String MoviessLanguagesAndAudio = "http://api-public.netflix.com/catalog/titles/movies/{0}/languages_and_audio";
+
 
         public const String SeriesBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}";
         public const String SeriesSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/similars";
@@ -39,6 +41,8 @@ namespace FlixSharp.Constants
         public const String SeriesScreenFormat = "http://api-public.netflix.com/catalog/titles/series/{0}/screen_formats";
         public const String SeriesAwards = "http://api-public.netflix.com/catalog/titles/series/{0}/awards";
         public const String SeriesBonusMaterials = "http://api-public.netflix.com/catalog/titles/series/{0}/bonus_materials";
+        public const String SeriesLanguagesAndAudio = "http://api-public.netflix.com/catalog/titles/series/{0}/languages_and_audio";
+
 
         public const String SeriesSeasonsBaseInfo = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}";
         public const String SeriesSeasonsCast = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/cast";
@@ -49,6 +53,16 @@ namespace FlixSharp.Constants
         public const String SeriesSeasonsSimilars = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/similars";
         public const String SeriesSeasonsDiscs = "http://api-public.netflix.com/catalog/titles/series/{0}/seasons/{1}/discs";
         public const String SeriesSeasonsAwards = "http://api-public.netflix.com/catalog/titles/series/{0}/season/{1}/awards";
+        public const String SeriesSeasonsLanguagesAndAudio = "http://api-public.netflix.com/catalog/titles/series/{0}/season/{1}/languages_and_audio";//?
+
+
+        public const String DiscsBaseInfo = "http://api-public.netflix.com/catalog/titles/discs/{0}";
+        public const String DiscsSynopsis = "http://api-public.netflix.com/catalog/titles/discs/{0}/synopsis";
+        public const String DiscsCast = "http://api-public.netflix.com/catalog/titles/discs/{0}/cast";
+        public const String DiscsFormatAvailability = "http://api-public.netflix.com/catalog/titles/discs/{0}/format_availability";
+        public const String DiscsScreenFormat = "http://api-public.netflix.com/catalog/titles/discs/{0}/screen_formats";
+        public const String DiscsSimilars = "http://api-public.netflix.com/catalog/titles/discs/{0}/similars";
+        public const String DiscsLanguagesAndAudio = "http://api-public.netflix.com/catalog/titles/discs/{0}/languages_and_audio";
 
         public const String PeopleBaseInfo = "http://api-public.netflix.com/catalog/people/{0}";
         public const String PeopleFilmography = "http://api-public.netflix.com/catalog/people/{0}/filmography";
@@ -77,6 +91,7 @@ namespace FlixSharp.Constants
 
             public const String LinkTitlesSimilar = "http://schemas.netflix.com/catalog/titles.similars";
             public const String LinkTitlesSeries = "http://schemas.netflix.com/catalog/titles.series";
+            public const String LinkTitlesSeason = "http://schemas.netflix.com/catalog/titles.season";
             public const String LinkTitlesDiscs = "http://schemas.netflix.com/catalog/titles.discs";
             public const String LinkTitlesFilmography = "http://schemas.netflix.com/catalog/titles.filmography";
         }

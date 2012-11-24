@@ -117,7 +117,9 @@ namespace FlixSharp.Queries
             var actors = GetActors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
             ///13) Directors
-            var directors = GetDirectors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+            Task<People> directors = null;
+            if(TitleType != NetflixType.Discs)
+                directors = GetDirectors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
             
             if (OnUserBehalf)
             {
@@ -138,11 +140,18 @@ namespace FlixSharp.Queries
             if (title.HasDiscs)
                 discs = GetDiscs(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
+            ///16) languages and audio...
+            if (title.HasLanguages)
+            { }
+
             title.Synopsis = await synopsis;
             title.ScreenFormats = await screenformats;
             title.Formats = await formatavailability;
             title.Actors = await actors;
-            title.Directors = await directors;
+            if (TitleType != NetflixType.Discs)
+                title.Directors = await directors;
+            else
+                title.Directors = new People();
             title.SimilarTitles = await similartitles;
 
             if (title.HasDiscs)
@@ -234,14 +243,19 @@ namespace FlixSharp.Queries
             var actors = GetActors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
             ///13) Directors
-            var directors = GetDirectors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
+            Task<People> directors = null;
+            if (TitleType != NetflixType.Discs)
+                directors = GetDirectors(NetflixId, NetflixAccount, OnUserBehalf, TitleType);
 
             Title title = await nfm;
             title.Synopsis = await synopsis;
             title.ScreenFormats = await screenformats;
             title.Formats = await formatavailability;
             title.Actors = await actors;
-            title.Directors = await directors;
+            if (TitleType != NetflixType.Discs)
+                title.Directors = await directors;
+            else
+                title.Directors = new People();
             title.completeness = TitleExpansion.Expanded;
 
             return title;
@@ -285,10 +299,12 @@ namespace FlixSharp.Queries
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesBaseInfo, idtup.Id);
                     break;
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsBaseInfo, idtup.Id);
+                    break;
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsBaseInfo, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -321,7 +337,7 @@ namespace FlixSharp.Queries
                                                 in movie.Elements("category")
                                                  where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
                                                  select tv)),
-                            AverageRating = (Single)movie.Element("average_rating"),
+                            AverageRating = (Single?)movie.Element("average_rating") ?? 0,
                             RunTime = (Int32?)movie.Element("runtime"),
                             Genres = new List<String>(from genres
                                                       in movie.Elements("category")
@@ -346,7 +362,11 @@ namespace FlixSharp.Queries
                             HasDiscs = (from webpage
                                           in movie.Elements("link")
                                           where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
-                                          select true).FirstOrDefault()
+                                          select true).FirstOrDefault(),
+                            HasLanguages = (from webpage
+                                            in movie.Elements("link")
+                                            where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
+                                            select true).FirstOrDefault()
                         }).SingleOrDefault();
                 return m;
             }
@@ -394,10 +414,12 @@ namespace FlixSharp.Queries
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesCast, idtup.Id);
                     break;
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsCast, idtup.Id);
+                    break;
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsCast, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -470,7 +492,6 @@ namespace FlixSharp.Queries
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsDirectors, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -542,7 +563,6 @@ namespace FlixSharp.Queries
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsAwards, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -635,10 +655,12 @@ namespace FlixSharp.Queries
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesFormatAvailability, idtup.Id);
                     break;
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsFormatAvailability, idtup.Id);
+                    break;
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsFormatAvailability, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -712,7 +734,9 @@ namespace FlixSharp.Queries
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsSynopsis, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsSynopsis, idtup.Id);
+                    break;
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -775,7 +799,9 @@ namespace FlixSharp.Queries
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsScreenFormat, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsScreenFormat, idtup.Id);
+                    break;
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -853,10 +879,12 @@ namespace FlixSharp.Queries
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesSimilars, idtup.Id);
                     break;
+                case NetflixType.Discs:
+                    url = String.Format(NetflixConstants.DiscsSimilars, idtup.Id);
+                    break;
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsSimilars, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -884,13 +912,13 @@ namespace FlixSharp.Queries
                                     BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
                                     Rating = new Rating((from mpaa
                                                         in movie.Elements("category")
-                                                         where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
+                                                         where (String)mpaa.Attribute("scheme") == NetflixConstants.Schemas.CategoryMpaaRating
                                                          select mpaa) ??
                                                         (from tv
                                                         in movie.Elements("category")
-                                                         where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
+                                                         where (String)tv.Attribute("scheme") == NetflixConstants.Schemas.CategoryTvRating
                                                          select tv)),
-                                    AverageRating = (Single)movie.Element("average_rating"),
+                                    AverageRating = (Single?)movie.Element("average_rating") ?? 0,
                                     RunTime = (Int32?)movie.Element("runtime"),
                                     Genres = new List<String>(from genres
                                                               in movie.Elements("category")
@@ -915,7 +943,11 @@ namespace FlixSharp.Queries
                                     HasDiscs = (from webpage
                                                 in movie.Elements("link")
                                                 where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
-                                                select true).FirstOrDefault()
+                                                select true).FirstOrDefault(),
+                                    HasLanguages = (from webpage
+                                                    in movie.Elements("link")
+                                                    where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
+                                                    select true).FirstOrDefault()
                                 });
             }
             catch (Exception ex)
@@ -963,8 +995,6 @@ namespace FlixSharp.Queries
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesBonusMaterials, idtup.Id);
                     break;
-                case NetflixType.SeriesSeason:
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 
@@ -1028,8 +1058,6 @@ namespace FlixSharp.Queries
                 case NetflixType.SeriesSeason:
                     url = String.Format(NetflixConstants.SeriesSeasonsDiscs, idtup.Id, idtup.SeasonId);
                     break;
-                case NetflixType.Movie:
-                case NetflixType.Programs:
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
 

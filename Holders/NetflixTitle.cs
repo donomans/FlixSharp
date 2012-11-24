@@ -85,6 +85,7 @@ namespace FlixSharp.Holders
             public Boolean HasAwards { get; set; }
             public Boolean HasBonusMaterials { get; set; }
             public Boolean HasDiscs { get; set; }
+            public Boolean HasLanguages { get; set; }
         #endregion
 
         
