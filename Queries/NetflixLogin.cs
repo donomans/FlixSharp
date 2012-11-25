@@ -28,13 +28,14 @@ namespace FlixSharp.Queries
         /// <param name="ApplicationName">[Optional] If you are not sure what Netflix 
         /// thinks your application name is, you may set it upon retrieving it from 
         /// the result of the GetLoginUrl request - your callback will receive it as a parameter</param>
-        public void SetCredentials(String ConsumerKey, String SharedSecret, String ApplicationName = "")
+        public NetflixLogin SetCredentials(String ConsumerKey, String SharedSecret, String ApplicationName = "")
         {
             consumerkey = ConsumerKey;
             sharedsecret = SharedSecret;
             applicationname = ApplicationName;
 
             informationset = true;
+            return this;
         }
 
         /// <summary>
