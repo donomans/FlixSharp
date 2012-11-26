@@ -84,7 +84,7 @@ namespace FlixSharp.Queries
                                     select new Title(TitleExpansion.Minimal)
                                     {
                                         IdUrl = movie.Element("id").Value,
-                                        Year = (Int32)movie.Element("release_year"),
+                                        Year = (Int32?)movie.Element("release_year") ?? 0,
                                         FullTitle = (String)movie.Element("title").Attribute("regular"),
                                         ShortTitle = (String)movie.Element("title").Attribute("short"),
                                         BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
@@ -184,7 +184,7 @@ namespace FlixSharp.Queries
                                     select new Title(TitleExpansion.Minimal)
                                     {
                                         IdUrl = movie.Element("id").Value,
-                                        Year = (Int32)movie.Element("release_year"),
+                                        Year = (Int32?)movie.Element("release_year") ?? 0,
                                         FullTitle = (String)movie.Element("title").Attribute("regular"),
                                         ShortTitle = (String)movie.Element("title").Attribute("short"),
                                         BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
