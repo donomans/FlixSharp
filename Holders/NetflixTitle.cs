@@ -22,6 +22,7 @@ namespace FlixSharp.Holders
             HasAwards = false;
             HasBonusMaterials = false;
             HasDiscs = false;
+            HasEpisodes = false;
         }
         public Title(TitleExpansion Completeness)
             : this()
@@ -86,6 +87,7 @@ namespace FlixSharp.Holders
             public Boolean HasBonusMaterials { get; set; }
             public Boolean HasDiscs { get; set; }
             public Boolean HasLanguages { get; set; }
+            public Boolean HasEpisodes { get; set; }
         #endregion
 
         

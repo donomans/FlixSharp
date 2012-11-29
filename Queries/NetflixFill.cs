@@ -135,7 +135,11 @@ namespace FlixSharp.Queries
                                     HasLanguages = (from webpage
                                                     in movie.Elements("link")
                                                     where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
-                                                    select true).FirstOrDefault()
+                                                    select true).FirstOrDefault(),
+                                    HasEpisodes = (from webpage
+                                                   in movie.Elements("link")
+                                                   where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkTitlesPrograms
+                                                   select true).FirstOrDefault()
                                 });
             }
             catch (Exception ex)
@@ -386,63 +390,6 @@ namespace FlixSharp.Queries
 
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
             return (await NetflixFill.GetBaseTitleInfo(doc, "catalog_title")).SingleOrDefault();
-            //try
-            //{
-            //    var m = (from movie
-            //            in (await doc).Elements("catalog_title")
-            //            select new Title(TitleExpansion.Minimal)
-            //            {
-            //                IdUrl = movie.Element("id").Value,
-            //                Year = (Int32?)movie.Element("release_year") ?? 0,
-            //                FullTitle = (String)movie.Element("title").Attribute("regular"),
-            //                ShortTitle = (String)movie.Element("title").Attribute("short"),
-            //                BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-            //                BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-            //                Rating = new Rating((from mpaa
-            //                                    in movie.Elements("category")
-            //                                     where mpaa.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryMpaaRating
-            //                                     select mpaa) ??
-            //                                    (from tv
-            //                                    in movie.Elements("category")
-            //                                     where tv.Attribute("scheme").Value == NetflixConstants.Schemas.CategoryTvRating
-            //                                     select tv)),
-            //                AverageRating = (Single?)movie.Element("average_rating") ?? 0,
-            //                RunTime = (Int32?)movie.Element("runtime"),
-            //                Genres = new List<String>(from genres
-            //                                          in movie.Elements("category")
-            //                                          where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
-            //                                          select (String)genres.Attribute("term")),
-            //                NetflixSiteUrl = (from webpage
-            //                                  in movie.Elements("link")
-            //                                  where (String)webpage.Attribute("title") == "web page"
-            //                                  select (String)webpage.Attribute("href")).FirstOrDefault(),
-            //                OfficialWebsite = (from webpage
-            //                                   in movie.Elements("link")
-            //                                   where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
-            //                                   select (String)webpage.Attribute("href")).FirstOrDefault(),
-            //                HasAwards = (from webpage
-            //                             in movie.Elements("link")
-            //                             where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkAwards
-            //                             select true).FirstOrDefault(),
-            //                HasBonusMaterials = (from webpage
-            //                                     in movie.Elements("link")
-            //                                     where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkBonusMaterials
-            //                                     select true).FirstOrDefault(),
-            //                HasDiscs = (from webpage
-            //                              in movie.Elements("link")
-            //                              where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
-            //                              select true).FirstOrDefault(),
-            //                HasLanguages = (from webpage
-            //                                in movie.Elements("link")
-            //                                where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
-            //                                select true).FirstOrDefault()
-            //            }).SingleOrDefault();
-            //    return m;
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new NetflixApiException(ex);
-            //}
         }
 
 
@@ -1007,6 +954,9 @@ namespace FlixSharp.Queries
                     break;
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesBonusMaterials, idtup.Id);
+                    break;
+                case NetflixType.SeriesSeason:
+                    url = String.Format(NetflixConstants.SeriesSeasonsBonusMaterials, idtup.Id, idtup.SeasonId);
                     break;
                 default: throw new Exception("Invalid request for TitleType: " + TitleType);
             }
