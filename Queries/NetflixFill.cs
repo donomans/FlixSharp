@@ -1015,6 +1015,9 @@ namespace FlixSharp.Queries
             String url = "";
             switch (TitleType)
             {
+                case NetflixType.Movie:
+                    url = String.Format(NetflixConstants.MoviesDiscs, idtup.Id);
+                    break;
                 case NetflixType.Series:
                     url = String.Format(NetflixConstants.SeriesDiscs, idtup.Id);
                     break;

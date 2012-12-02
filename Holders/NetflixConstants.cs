@@ -16,12 +16,12 @@ namespace FlixSharp.Constants
         public const String CatalogPeopleSearcUrl = "http://api-public.netflix.com/catalog/people";
         public const String CatalogTitleAutoCompleteUrl = "http://api-public.netflix.com/catalog/titles/autocomplete";
 
-        public const String TitlesDiscs = "http://api-public.netflix.com/catalog/titles/discs/{0}";
+        public const String TitlesDiscs = "http://api-public.netflix.com/catalog/titles/discs/{0}";///?
 
         public const String MoviesBaseInfo = "http://api-public.netflix.com/catalog/titles/movies/{0}";
         public const String MoviesSimilars = "http://api-public.netflix.com/catalog/titles/movies/{0}/similars";
-        public const String MoviesRelated = "";
         public const String MoviesSynopsis = "http://api-public.netflix.com/catalog/titles/movies/{0}/synopsis";
+        public const String MoviesDiscs = "http://api-public.netflix.com/catalog/titles/movies/{0}/discs";
         public const String MoviesCast = "http://api-public.netflix.com/catalog/titles/movies/{0}/cast";
         public const String MoviesDirectors = "http://api-public.netflix.com/catalog/titles/movies/{0}/directors";
         public const String MoviesFormatAvailability = "http://api-public.netflix.com/catalog/titles/movies/{0}/format_availability";
