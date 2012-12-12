@@ -53,7 +53,7 @@ namespace FlixSharp
         #endregion
         #region On User Behalf global
         private static Boolean _OnUserBehalf = true;
-        public static Boolean OnUserBehalf { get { return _OnUserBehalf; } }
+        public static Boolean OnUserBehalf { get { return _OnUserBehalf; } set { _OnUserBehalf = value; } }
         #endregion
 
         /// <summary>
