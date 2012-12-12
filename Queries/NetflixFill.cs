@@ -8,6 +8,7 @@ using FlixSharp.Constants;
 using FlixSharp.Async;
 using System.Xml.Linq;
 using FlixSharp.Helpers;
+using System.Net;
 
 namespace FlixSharp.Queries
 {
@@ -80,72 +81,67 @@ namespace FlixSharp.Queries
         internal static async Task<List<Title>> GetBaseTitleInfo(Task<XDocument> doc, String nodename)
         {
             List<Title> movies = new List<Title>(25);
-            try
-            {
-                movies.AddRange(from movie
-                                in (await doc).Descendants(nodename)
-                                select new Title(TitleExpansion.Minimal)
-                                {
-                                    IdUrl = movie.Element("id").Value,
-                                    Year = movie.Element("release_year") != null 
-                                        && (String)movie.Element("release_year") != "" ?
-                                        (Int32)movie.Element("release_year") : 0,
-                                    FullTitle = (String)movie.Element("title").Attribute("regular"),
-                                    ShortTitle = (String)movie.Element("title").Attribute("short"),
-                                    BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
-                                    BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
-                                    Rating = new Rating((from mpaa
-                                                        in movie.Elements("category")
-                                                         where (String)mpaa.Attribute("scheme") == NetflixConstants.Schemas.CategoryMpaaRating
-                                                         select mpaa) ??
-                                                        (from tv
-                                                        in movie.Elements("category")
-                                                         where (String)tv.Attribute("scheme") == NetflixConstants.Schemas.CategoryTvRating
-                                                         select tv)),
-                                    AverageRating = movie.Element("average_rating") != null 
-                                        && (String)movie.Element("average_rating") != "" ?
-                                        (Single)movie.Element("average_rating") : 0,
-                                    RunTime = movie.Element("runtime") != null 
-                                        && (String)movie.Element("runtime") != "" ?
-                                        (Int32)movie.Element("runtime") : 0,
-                                    Genres = new List<String>(from genres
-                                                              in movie.Elements("category")
-                                                              where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
-                                                              select (String)genres.Attribute("term")),
-                                    NetflixSiteUrl = (from webpage
-                                                      in movie.Elements("link")
-                                                      where (String)webpage.Attribute("title") == "web page"
-                                                      select (String)webpage.Attribute("href")).FirstOrDefault(),
-                                    OfficialWebsite = (from webpage
-                                                       in movie.Elements("link")
-                                                       where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
-                                                       select (String)webpage.Attribute("href")).FirstOrDefault(),
-                                    HasAwards = (from webpage
-                                                 in movie.Elements("link")
-                                                 where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkAwards
-                                                 select true).FirstOrDefault(),
-                                    HasBonusMaterials = (from webpage
-                                                         in movie.Elements("link")
-                                                         where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkBonusMaterials
-                                                         select true).FirstOrDefault(),
-                                    HasDiscs = (from webpage
-                                                in movie.Elements("link")
-                                                where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
-                                                select true).FirstOrDefault(),
-                                    HasLanguages = (from webpage
+            
+            movies.AddRange(from movie
+                            in (await doc).Descendants(nodename)
+                            select new Title(TitleExpansion.Minimal)
+                            {
+                                IdUrl = movie.Element("id").Value,
+                                Year = movie.Element("release_year") != null 
+                                    && (String)movie.Element("release_year") != "" ?
+                                    (Int32)movie.Element("release_year") : 0,
+                                FullTitle = (String)movie.Element("title").Attribute("regular"),
+                                ShortTitle = (String)movie.Element("title").Attribute("short"),
+                                BoxArtUrlSmall = (String)movie.Element("box_art").Attribute("small"),
+                                BoxArtUrlLarge = (String)movie.Element("box_art").Attribute("large"),
+                                Rating = new Rating((from mpaa
+                                                    in movie.Elements("category")
+                                                        where (String)mpaa.Attribute("scheme") == NetflixConstants.Schemas.CategoryMpaaRating
+                                                        select mpaa) ??
+                                                    (from tv
+                                                    in movie.Elements("category")
+                                                        where (String)tv.Attribute("scheme") == NetflixConstants.Schemas.CategoryTvRating
+                                                        select tv)),
+                                AverageRating = movie.Element("average_rating") != null 
+                                    && (String)movie.Element("average_rating") != "" ?
+                                    (Single)movie.Element("average_rating") : 0,
+                                RunTime = movie.Element("runtime") != null 
+                                    && (String)movie.Element("runtime") != "" ?
+                                    (Int32)movie.Element("runtime") : 0,
+                                Genres = new List<String>(from genres
+                                                            in movie.Elements("category")
+                                                            where (String)genres.Attribute("scheme") == NetflixConstants.Schemas.CategoryGenre
+                                                            select (String)genres.Attribute("term")),
+                                NetflixSiteUrl = (from webpage
                                                     in movie.Elements("link")
-                                                    where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
-                                                    select true).FirstOrDefault(),
-                                    HasEpisodes = (from webpage
-                                                   in movie.Elements("link")
-                                                   where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkTitlesPrograms
-                                                   select true).FirstOrDefault()
-                                });
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+                                                    where (String)webpage.Attribute("title") == "web page"
+                                                    select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                OfficialWebsite = (from webpage
+                                                    in movie.Elements("link")
+                                                    where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.TitleOfficialUrl
+                                                    select (String)webpage.Attribute("href")).FirstOrDefault(),
+                                HasAwards = (from webpage
+                                                in movie.Elements("link")
+                                                where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkAwards
+                                                select true).FirstOrDefault(),
+                                HasBonusMaterials = (from webpage
+                                                        in movie.Elements("link")
+                                                        where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkBonusMaterials
+                                                        select true).FirstOrDefault(),
+                                HasDiscs = (from webpage
+                                            in movie.Elements("link")
+                                            where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkDiscs
+                                            select true).FirstOrDefault(),
+                                HasLanguages = (from webpage
+                                                in movie.Elements("link")
+                                                where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkLanguagesAndAudio
+                                                select true).FirstOrDefault(),
+                                HasEpisodes = (from webpage
+                                                in movie.Elements("link")
+                                                where (String)webpage.Attribute("rel") == NetflixConstants.Schemas.LinkTitlesPrograms
+                                                select true).FirstOrDefault()
+                            });
+            
             return movies;
         }
     }
@@ -448,23 +444,17 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = await AsyncHelpers.LoadXDocumentAsync(url);
             People people = new People();
-            try
-            {
-                people.AddRange(from person
-                                in (await doc).Element("people").Elements("person")
+        
+            people.AddRange(from person
+                                in doc.Element("people").Elements("person")
                                 select new Person(PersonExpansion.Minimal)
                                 {
                                     IdUrl = person.Element("id").Value,
                                     Name = person.Element("name").Value,
                                     Bio = (String)person.Element("bio")
                                 });
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
             return people;
         }
 
@@ -519,23 +509,17 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = await AsyncHelpers.LoadXDocumentAsync(url);
             People people = new People();
-            try
-            {
-                people.AddRange(from person
-                                in (await doc).Element("people").Elements("person")
-                                select new Person(PersonExpansion.Minimal)
-                                {
-                                    IdUrl = person.Element("id").Value,
-                                    Name = person.Element("name").Value,
-                                    Bio = (String)person.Element("bio")
-                                });
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+            people.AddRange(from person
+                            in doc.Element("people").Elements("person")
+                            select new Person(PersonExpansion.Minimal)
+                            {
+                                IdUrl = person.Element("id").Value,
+                                Name = person.Element("name").Value,
+                                Bio = (String)person.Element("bio")
+                            });
+
             return people;
         }
 
@@ -593,44 +577,38 @@ namespace FlixSharp.Queries
 
             var doc = await AsyncHelpers.LoadXDocumentAsync(url);
             List<Award> a = new List<Award>();
-            try
-            {
-                var awardnominees = from awards
-                             in doc.Element("awards").Elements("award_nominee")
-                                    select new Award()
-                                    {
-                                        Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
-                                        AwardName = (String)awards.Element("category").Attribute("term"),
-                                        PersonIdUrl = (awards.Element("link") != null ?
-                                           (String)awards.Element("link").Attribute("href") : null),
-                                        Type = (AwardType)Enum.Parse(typeof(AwardType),
-                                           awards.Element("category").Attribute("scheme").Value.Replace("_", "").
-                                           Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-                                               Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
-                                        Winner = false
-                                    };
-                var awardwinners = from awards
-                             in doc.Element("awards").Elements("award_winner")
-                                   select new Award()
-                                   {
-                                       Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
-                                       AwardName = (String)awards.Element("category").Attribute("term"),
-                                       PersonIdUrl = (awards.Element("link") != null ?
-                                          (String)awards.Element("link").Attribute("href") : null),
-                                       Type = (AwardType)Enum.Parse(typeof(AwardType),
-                                          awards.Element("category").Attribute("scheme").Value.
-                                          Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
-                                              Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
-                                       Winner = true
-                                   };
+            var awardnominees = from awards
+                         in doc.Element("awards").Elements("award_nominee")
+                                select new Award()
+                                {
+                                    Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
+                                    AwardName = (String)awards.Element("category").Attribute("term"),
+                                    PersonIdUrl = (awards.Element("link") != null ?
+                                       (String)awards.Element("link").Attribute("href") : null),
+                                    Type = (AwardType)Enum.Parse(typeof(AwardType),
+                                       awards.Element("category").Attribute("scheme").Value.Replace("_", "").
+                                       Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
+                                           Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
+                                    Winner = false
+                                };
+            var awardwinners = from awards
+                         in doc.Element("awards").Elements("award_winner")
+                               select new Award()
+                               {
+                                   Year = awards.Attribute("year") == null || (String)awards.Attribute("year") == "" ? null : (Int32?)awards.Attribute("year"),
+                                   AwardName = (String)awards.Element("category").Attribute("term"),
+                                   PersonIdUrl = (awards.Element("link") != null ?
+                                      (String)awards.Element("link").Attribute("href") : null),
+                                   Type = (AwardType)Enum.Parse(typeof(AwardType),
+                                      awards.Element("category").Attribute("scheme").Value.
+                                      Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)[awards.Element("category").Attribute("scheme").Value.
+                                          Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries).Length - 1].Replace("_", ""), true),
+                                   Winner = true
+                               };
 
-                a.AddRange(awardnominees);
-                a.AddRange(awardwinners);
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+            a.AddRange(awardnominees);
+            a.AddRange(awardwinners);
+
             return a;
         }
 
@@ -689,25 +667,20 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
-            try
-            {
-                var formatavailability = from formats
-                                        in (await doc).Element("delivery_formats").Elements("availability")
-                                         select new FormatAvailability()
-                                         {
-                                             AvailableFrom = formats.Attribute("available_from") == null || (String)formats.Attribute("available_from") == "" ?
-                                                     null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_from"))),
-                                             AvailableUntil = formats.Attribute("available_until") == null || (String)formats.Attribute("available_until") == "" ?
-                                                     null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_until"))),
-                                             Format = (String)formats.Element("category").Attribute("term")
-                                         };
 
-                return formatavailability.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+            var formatavailability = from formats
+                                    in (await doc).Element("delivery_formats").Elements("availability")
+                                     select new FormatAvailability()
+                                     {
+                                         AvailableFrom = formats.Attribute("available_from") == null || (String)formats.Attribute("available_from") == "" ?
+                                                 null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_from"))),
+                                         AvailableUntil = formats.Attribute("available_until") == null || (String)formats.Attribute("available_until") == "" ?
+                                                 null : (Nullable<DateTime>)GeneralHelpers.FromUnixTime(Int64.Parse((String)formats.Attribute("available_until"))),
+                                         Format = (String)formats.Element("category").Attribute("term")
+                                     };
+
+            return formatavailability.ToList();
+
         }
 
         public async Task<String> GetSynopsis(String NetflixIdUrl, Boolean OnUserBehalf)
@@ -765,14 +738,9 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
-            try
-            {
-                return (String)(await doc).Element("synopsis");
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+
+            return (String)(await doc).Element("synopsis");
+
         }
 
         public async Task<List<ScreenFormats>> GetScreenFormats(String NetflixIdUrl, Boolean OnUserBehalf)
@@ -831,28 +799,22 @@ namespace FlixSharp.Queries
 
             XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
 
-            try
-            {
-                var screenformats = from formats
-                                    in doc.Element("screen_formats").Elements("screen_format")
-                                    select new ScreenFormats()
-                                    {
-                                        Format = (from format
-                                                in formats.Elements("category")
-                                                  where (String)format.Attribute("scheme") == NetflixConstants.Schemas.LinkTitleFormat
-                                                  select (String)format.Attribute("term")).FirstOrDefault(),
-                                        ScreenFormat = (from screenformat
-                                                in formats.Elements("category")
-                                                        where (String)screenformat.Attribute("scheme") == NetflixConstants.Schemas.LinkScreenFormat
-                                                        select (String)screenformat.Attribute("term")).FirstOrDefault()
-                                    };
 
-                return screenformats.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+            var screenformats = from formats
+                                in doc.Element("screen_formats").Elements("screen_format")
+                                select new ScreenFormats()
+                                {
+                                    Format = (from format
+                                            in formats.Elements("category")
+                                              where (String)format.Attribute("scheme") == NetflixConstants.Schemas.LinkTitleFormat
+                                              select (String)format.Attribute("term")).FirstOrDefault(),
+                                    ScreenFormat = (from screenformat
+                                            in formats.Elements("category")
+                                                    where (String)screenformat.Attribute("scheme") == NetflixConstants.Schemas.LinkScreenFormat
+                                                    select (String)screenformat.Attribute("term")).FirstOrDefault()
+                                };
+
+            return screenformats.ToList();
         }
 
         public async Task<List<Title>> GetSimilarTitles(String NetflixIdUrl, Boolean OnUserBehalf, Int32 Limit = 25, Int32 Page = 0)
@@ -976,7 +938,7 @@ namespace FlixSharp.Queries
                             select movie.Element("link") != null ? (String)movie.Element("link").Attribute("href") : "";
                 return bonus.ToList();
             }
-            catch (Exception ex)
+            catch (NetflixException ex)
             {
                 ///bonus materials aren't terribly common
                 throw new NetflixApiException("No bonus materials found", ex);
@@ -1161,26 +1123,21 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
             var doc = AsyncHelpers.LoadXDocumentAsync(url);
-            try
-            {
-                Person p = (from person
-                                in (await doc).Elements("person")
-                            select new Person(PersonExpansion.Minimal)
-                            {
-                                IdUrl = person.Element("id").Value,
-                                Name = person.Element("name").Value,
-                                Bio = (String)person.Element("bio"),
-                                NetflixSiteUrl = (from webpage
-                                        in person.Elements("link")
-                                                  where (String)webpage.Attribute("title") == "web page"
-                                                  select (String)webpage.Attribute("href")).FirstOrDefault()
-                            }).SingleOrDefault();
-                return p;
-            }
-            catch (Exception ex)
-            {
-                throw new NetflixApiException(ex);
-            }
+
+            Person p = (from person
+                            in (await doc).Elements("person")
+                        select new Person(PersonExpansion.Minimal)
+                        {
+                            IdUrl = person.Element("id").Value,
+                            Name = person.Element("name").Value,
+                            Bio = (String)person.Element("bio"),
+                            NetflixSiteUrl = (from webpage
+                                    in person.Elements("link")
+                                              where (String)webpage.Attribute("title") == "web page"
+                                              select (String)webpage.Attribute("href")).FirstOrDefault()
+                        }).SingleOrDefault();
+            return p;
+
         }
 
         public async Task<List<Title>> GetFilmography(String NetflixIdUrl, Boolean OnUserBehalf)

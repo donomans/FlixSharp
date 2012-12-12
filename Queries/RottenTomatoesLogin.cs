@@ -10,5 +10,22 @@ namespace FlixSharp.Queries
     {
         public static String ConsumerKey { get { return consumerkey; } }
         private static String consumerkey;
+
+        public static Boolean InformationSet { get { return informationset; } }
+        private static Boolean informationset = false;
+
+
+        public RottenTomatoesLogin SetCredentials(String ConsumerKey)
+        {
+            consumerkey = ConsumerKey;
+            informationset = true;
+            return this;
+        }
+
+        internal static void CheckInformationSet()
+        {
+            if (!informationset)
+                throw new ArgumentException("Rotten Tomatoes API key has not been set.");
+        }
     }
 }

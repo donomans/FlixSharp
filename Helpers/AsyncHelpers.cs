@@ -37,6 +37,10 @@ namespace FlixSharp.Async
                     {
                         throw new NetflixThrottleException(ex);
                     }
+                    else if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_RATE")
+                    {
+                        throw new NetflixOverQuotaException(ex, ex.Response.Headers["Retry-After"]);
+                    }
                     ///possibly throw a throttled exception or something more valid?
                     throw;
                 }
@@ -181,20 +185,48 @@ namespace FlixSharp.Async
         }
     }
 
-    public class NetflixThrottleException : WebException
+    public class NetflixOverQuotaException : NetflixException
+    {
+        public DateTime RetryAt { get; set; }
+
+        public NetflixOverQuotaException(WebException ex, String retryafter = "")
+            : base("ERR_403_DEVELOPER_OVER_RATE", ex)
+        {
+            Int32 retrytime;
+            if (Int32.TryParse(retryafter, out retrytime))
+            {
+                this.RetryAt = DateTime.Now.AddSeconds(retrytime);
+            }
+            else
+                this.RetryAt = new DateTime();
+        }
+    }
+    public class NetflixThrottleException : NetflixException
     {
         public NetflixThrottleException(WebException ex) 
             : base("ERR_403_DEVELOPER_OVER_QPS", ex)
         {
         }
     }
+    public class NetflixException : WebException
+    {
+        public NetflixException(WebException ex)
+            : base(ex.Message, ex)
+        {
+        }
+        public NetflixException(String Message, WebException ex)
+            : base(Message, ex)
+        {
+        }
+    }
+
     public class NetflixApiException : Exception
     {
-        public NetflixApiException(Exception ex)
+        public NetflixApiException(NetflixException ex)
             : base("FlixSharp had some issues - Inner exception contains information", ex)
         {
         }
-        public NetflixApiException(String message, Exception ex)
+        public NetflixApiException(String message, NetflixException ex)
             : base("FlixSharp had some issues - " + message, ex)
         {
         }

@@ -58,6 +58,7 @@
     <Compile Include="Helpers\OAuthHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\RottenTomatoesLogin.cs" />
+    <Compile Include="Queries\RottenTomatoesSearch.cs" />
     <Compile Include="RedBox.cs" />
     <Compile Include="RottenTomatoes.cs" />
     <None Include="README" />
