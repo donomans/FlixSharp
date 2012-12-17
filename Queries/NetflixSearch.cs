@@ -47,7 +47,7 @@ namespace FlixSharp.Queries
                 "GET",
                 tokenSecret,
                 extraParams);
-            var persondoc = AsyncHelpers.LoadXDocumentAsync(personurl);
+            var persondoc = AsyncHelpers.NetflixLoadXDocumentAsync(personurl);
 
             String titleurl = OAuth.OAuthHelpers.GetOAuthRequestUrl(NetflixLogin.SharedSecret,
                 NetflixLogin.ConsumerKey,
@@ -55,7 +55,7 @@ namespace FlixSharp.Queries
                 "GET",
                 tokenSecret,
                 extraParams);
-            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
+            var moviedoc = AsyncHelpers.NetflixLoadXDocumentAsync(titleurl);
             
             People people = new People();
             switch (PersonExpansionLevel)
@@ -173,7 +173,7 @@ namespace FlixSharp.Queries
                 tokenSecret,
                 extraParams);
 
-            var moviedoc = AsyncHelpers.LoadXDocumentAsync(titleurl);
+            var moviedoc = AsyncHelpers.NetflixLoadXDocumentAsync(titleurl);
 
             Titles movies = new Titles();
 
@@ -272,7 +272,7 @@ namespace FlixSharp.Queries
                 tokenSecret,
                 extraParams);
 
-            var persondoc = AsyncHelpers.LoadXDocumentAsync(personurl);
+            var persondoc = AsyncHelpers.NetflixLoadXDocumentAsync(personurl);
 
             People people = new People();
 
@@ -305,7 +305,7 @@ namespace FlixSharp.Queries
                 "?oauth_consumer_key=" + NetflixLogin.ConsumerKey +
                 "&term=" + Title;
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
             var titles = from someelement
                          in (await doc).Descendants("title")

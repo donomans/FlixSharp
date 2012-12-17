@@ -21,10 +21,13 @@ namespace FlixSharp.Holders
         public void AddRange(IEnumerable<Title> movies)
         {
             foreach (Title m in movies)
-                if (_movies.ContainsKey(m.Id))
-                    _movies[m.Id] = m;//.AddParent(this);
+            {
+                String id = m.Id + (m.SeasonId != "" ? ";" + m.SeasonId : "");
+                if (_movies.ContainsKey(id))
+                    _movies[id] = m;//.AddParent(this);
                 else
-                    _movies.Add(m.Id, m);//.AddParent(this));
+                    _movies.Add(id, m);//.AddParent(this));
+            }
         }
 
         public IEnumerator<Title> GetEnumerator()

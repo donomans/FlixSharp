@@ -384,7 +384,7 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
             return (await NetflixFill.GetBaseTitleInfo(doc, "catalog_title")).SingleOrDefault();
         }
 
@@ -444,7 +444,7 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
 
-            var doc = await AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = await AsyncHelpers.NetflixLoadXDocumentAsync(url);
             People people = new People();
         
             people.AddRange(from person
@@ -509,7 +509,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = await AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = await AsyncHelpers.NetflixLoadXDocumentAsync(url);
             People people = new People();
             people.AddRange(from person
                             in doc.Element("people").Elements("person")
@@ -575,7 +575,7 @@ namespace FlixSharp.Queries
                 ExtraParams);
 
 
-            var doc = await AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = await AsyncHelpers.NetflixLoadXDocumentAsync(url);
             List<Award> a = new List<Award>();
             var awardnominees = from awards
                          in doc.Element("awards").Elements("award_nominee")
@@ -666,7 +666,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
             var formatavailability = from formats
                                     in (await doc).Element("delivery_formats").Elements("availability")
@@ -737,7 +737,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
             return (String)(await doc).Element("synopsis");
 
@@ -797,7 +797,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            XDocument doc = await AsyncHelpers.LoadXDocumentAsync(url);
+            XDocument doc = await AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
 
             var screenformats = from formats
@@ -874,7 +874,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
             return await NetflixFill.GetBaseTitleInfo(doc, "similars_item");
         }
@@ -931,7 +931,7 @@ namespace FlixSharp.Queries
                 ExtraParams);
             try
             {
-                var doc = AsyncHelpers.LoadXDocumentAsync(url);
+                var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
                 
                 var bonus = from movie
                             in (await doc).Elements("bonus_materials")
@@ -996,7 +996,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
             
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
             return await NetflixFill.GetBaseTitleInfo(doc, "catalog_title");
             //List<Title> movies = new List<Title>();
             //try
@@ -1122,7 +1122,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
 
             Person p = (from person
                             in (await doc).Elements("person")
@@ -1186,7 +1186,7 @@ namespace FlixSharp.Queries
                 TokenSecret,
                 ExtraParams);
 
-            var doc = AsyncHelpers.LoadXDocumentAsync(url);
+            var doc = AsyncHelpers.NetflixLoadXDocumentAsync(url);
             return await NetflixFill.GetBaseTitleInfo(doc, "filmography_item");
             //List<Title> movies = new List<Title>();
             //try

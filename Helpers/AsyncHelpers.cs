@@ -17,52 +17,68 @@ namespace FlixSharp.Async
 {
     internal class AsyncHelpers
     {
-        ///10 per second seems to be a liberal estimate by Netflix - they are strict....
-        ///seems to trigger failures unless its throttled quite a bit?
-        public static SlowLeak Leak = new SlowLeak(8, 1000); 
-
-        public static async Task<XDocument> ThrottleLoadXDocumentAsync(String url)
+        public static Dictionary<LeakType, SlowLeak> Leaker = new Dictionary<LeakType, SlowLeak>();
+        internal enum LeakType
         {
+            Netflix,
+            RottenTomatoes,
+            IMDB,
+            Redbox,
+            Amazon
+        }
+        private static async Task<String> LoadStringAsync(String url, LeakType type)
+        {
+            if (!Leaker.ContainsKey(type))
+            {
+                Int32 rate = type == LeakType.Amazon ? 1 : 8; ///I believe everyone but Amazon can handle 8-10 per second
+                Leaker[type] = new SlowLeak(rate, 1000);
+            }
             using (WebClient wc = new WebClient())
             {
-                try
-                {
-                    Leak.CheckLeak();
-                    String xml = await wc.DownloadStringTaskAsync(url);
-                    return XDocument.Parse(xml);
-                }
-                catch (WebException ex)
-                {
-                    if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_QPS")
-                    {
-                        throw new NetflixThrottleException(ex);
-                    }
-                    else if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_RATE")
-                    {
-                        throw new NetflixOverQuotaException(ex, ex.Response.Headers["Retry-After"]);
-                    }
-                    ///possibly throw a throttled exception or something more valid?
-                    throw;
-                }
+                Leaker[type].CheckLeak();
+                return await wc.DownloadStringTaskAsync(url);
             }
         }
-        public static async Task<XDocument> LoadXDocumentAsync(String url)
+
+        private static async Task<XDocument> NetflixThrottleLoadXDocumentAsync(String url)
         {
-            ///temporary
+            try
+            {
+                String xml = await LoadStringAsync(url, LeakType.Netflix);
+                return XDocument.Parse(xml);
+            }
+            catch (WebException ex)
+            {
+                if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_QPS")
+                {
+                    throw new NetflixThrottleException(ex);
+                }
+                else if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_RATE")
+                {
+                    throw new NetflixOverQuotaException(ex, ex.Response.Headers["Retry-After"]);
+                }
+                throw;
+            }
+        }
+        public static async Task<XDocument> NetflixLoadXDocumentAsync(String url)
+        {
             Boolean retry = false;
             try
             {
-                return await ThrottleLoadXDocumentAsync(url);
+                return await NetflixThrottleLoadXDocumentAsync(url);
             }
             catch (NetflixThrottleException)
             { retry = true; }
             if (retry)
             {
-                Thread.Sleep(150);
-                return await LoadXDocumentAsync(url);
+                Thread.Sleep(150); 
+                return await NetflixLoadXDocumentAsync(url);
             }
             return null;
         }
+
+       
+
 
         public static async Task<IEnumerable<Title>> GetExpandedMovieDetails(XDocument doc, Boolean OnUserBehalf = true)
         {

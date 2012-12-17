@@ -32,7 +32,15 @@ namespace FlixSharp.OAuth
                 else if (char.IsWhiteSpace(c))
                     encoded.AddRange(new[] { '%', '2', '0' });
                 else
-                    encoded.AddRange(HttpUtility.UrlEncode(c.ToString()).ToUpper().ToArray());
+                {
+                    Char[] chars = HttpUtility.UrlEncode(c.ToString()).ToUpper()
+                           .Replace("!", "%21")
+                           .Replace("*", "%2A")
+                           .Replace("'", "%27")
+                           .Replace("(", "%28")
+                           .Replace(")", "%29").ToArray();
+                    encoded.AddRange(chars);
+                }
             }
             return String.Join("", encoded);
         }
