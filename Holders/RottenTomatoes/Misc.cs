@@ -15,7 +15,7 @@ namespace FlixSharp.Holders.RottenTomatoes
     public class Rating
     {
         public RatingType Type { get; set; }
-        public Rating Rating { get; set; }
+        public RottenRating RottenTomatoRating { get; set; }
         public Int32 Score { get; set; }
     }
 
@@ -31,7 +31,7 @@ namespace FlixSharp.Holders.RottenTomatoes
         Audience
     }
 
-    public enum Rating
+    public enum RottenRating
     {
         Fresh,
         Upright,
