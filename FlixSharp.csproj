@@ -43,19 +43,23 @@
     <Compile Include="Amazon.cs" />
     <Compile Include="Helpers\AsyncHelpers.cs" />
     <Compile Include="Helpers\GeneralHelpers.cs" />
-    <Compile Include="Holders\NetflixEnums.cs" />
-    <Compile Include="Holders\NetflixTitle.cs" />
-    <Compile Include="Holders\NetflixTitles.cs" />
-    <Compile Include="Holders\NetflixPeople.cs" />
-    <Compile Include="Holders\NetflixPerson.cs" />
-    <Compile Include="Holders\NetflixSearchResults.cs" />
-    <Compile Include="Holders\RottenTomatoesConstants.cs" />
-    <Compile Include="Queries\NetflixFill.cs" />
-    <Compile Include="Queries\NetflixLogin.cs" />
-    <Compile Include="Queries\NetflixSearch.cs" />
+    <Compile Include="Holders\Enums.cs" />
+    <Compile Include="Holders\Netflix\Misc.cs" />
+    <Compile Include="Holders\Netflix\Title.cs" />
+    <Compile Include="Holders\Netflix\Titles.cs" />
+    <Compile Include="Holders\Netflix\People.cs" />
+    <Compile Include="Holders\Netflix\Person.cs" />
+    <Compile Include="Holders\Netflix\SearchResults.cs" />
+    <Compile Include="Holders\RottenTomatoes\Constants.cs" />
+    <Compile Include="Holders\RottenTomatoes\Misc.cs" />
+    <Compile Include="Holders\RottenTomatoes\Person.cs" />
+    <Compile Include="Holders\RottenTomatoes\Title.cs" />
+    <Compile Include="Queries\Netflix\Fill.cs" />
+    <Compile Include="Queries\Netflix\Login.cs" />
+    <Compile Include="Queries\Netflix\Search.cs" />
     <Compile Include="Netflix.cs" />
-    <Compile Include="Holders\NetflixAccount.cs" />
-    <Compile Include="Holders\NetflixConstants.cs" />
+    <Compile Include="Holders\Netflix\Account.cs" />
+    <Compile Include="Holders\Netflix\Constants.cs" />
     <Compile Include="Helpers\OAuthHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\RottenTomatoesFill.cs" />
@@ -64,6 +68,9 @@
     <Compile Include="RedBox.cs" />
     <Compile Include="RottenTomatoes.cs" />
     <None Include="README" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Queries\RottenTomatoes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

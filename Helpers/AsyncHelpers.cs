@@ -12,6 +12,7 @@ using FlixSharp.Queries;
 using System.Collections;
 using System.Threading;
 using System.Collections.Concurrent;
+using FlixSharp.Holders.Netflix;
 
 namespace FlixSharp.Async
 {
@@ -91,7 +92,7 @@ namespace FlixSharp.Async
             foreach (String id in movieids)
             {
                 ///loop through and do a NetflixFill.whatever to fill the titles
-                titles.Add(Netflix.Fill.Titles.GetExpandedTitle(id, OnUserBehalf));
+                titles.Add(FlixSharp.Netflix.Fill.Titles.GetExpandedTitle(id, OnUserBehalf));
             }
 
             List<Title> awaitedtitles = new List<Title>();
@@ -109,7 +110,7 @@ namespace FlixSharp.Async
    
             foreach (String id in movieids)
             {
-                titles.Add(Netflix.Fill.Titles.GetCompleteTitle(id, OnUserBehalf));
+                titles.Add(FlixSharp.Netflix.Fill.Titles.GetCompleteTitle(id, OnUserBehalf));
             }
 
             List<Title> awaitedtitles = new List<Title>();
@@ -127,7 +128,7 @@ namespace FlixSharp.Async
 
             foreach (String id in personids)
             {
-                people.Add(Netflix.Fill.People.GetCompletePerson(id, OnUserBehalf));
+                people.Add(FlixSharp.Netflix.Fill.People.GetCompletePerson(id, OnUserBehalf));
             }
 
             List<Person> awaitedpeople = new List<Person>();

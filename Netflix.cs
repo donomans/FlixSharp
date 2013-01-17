@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FlixSharp.OAuth;
-using FlixSharp.Constants;
-using FlixSharp.Holders;
-using FlixSharp.Queries;
+using FlixSharp.Constants.Netflix;
+using FlixSharp.Queries.Netflix;
 using System.Xml.Linq;
 using System.Threading.Tasks;
+using FlixSharp.Holders.Netflix;
+using FlixSharp.Queries;
 
-namespace FlixSharp
+namespace FlixSharp//.Netflix
 {
     public class Netflix
     {

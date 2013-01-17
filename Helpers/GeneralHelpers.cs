@@ -1,4 +1,5 @@
 ﻿using FlixSharp.Holders;
+using FlixSharp.Holders.Netflix;
 using System;
 using System.Collections.Generic;
 using System.Linq;
