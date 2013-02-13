@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using FlixSharp.Helpers;
 using System.Net;
 using FlixSharp.Holders.Netflix;
+using FlixSharp.Holders;
 
 namespace FlixSharp.Queries.Netflix
 {
@@ -938,7 +939,7 @@ namespace FlixSharp.Queries.Netflix
                             select movie.Element("link") != null ? (String)movie.Element("link").Attribute("href") : "";
                 return bonus.ToList();
             }
-            catch (NetflixException ex)
+            catch (ApiException ex)
             {
                 ///bonus materials aren't terribly common
                 throw new NetflixApiException("No bonus materials found", ex);

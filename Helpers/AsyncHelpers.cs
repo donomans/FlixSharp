@@ -13,6 +13,7 @@ using System.Collections;
 using System.Threading;
 using System.Collections.Concurrent;
 using FlixSharp.Holders.Netflix;
+using Newtonsoft.Json.Linq;
 
 namespace FlixSharp.Async
 {
@@ -78,7 +79,38 @@ namespace FlixSharp.Async
             return null;
         }
 
-       
+        private static async Task<JObject> RottenTomatoesThrottleLoadXDocumentAsync(String url)
+        {
+            try
+            {
+                String json = await LoadStringAsync(url, LeakType.RottenTomatoes);
+                return JObject.Parse(json);
+            }
+            catch (WebException ex)
+            {
+                //if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_QPS")///what is the RT equivalent?
+                //{
+                    throw new RottenTomatoesThrottleException(ex);
+                //}
+                //throw;
+            }
+        }
+        public static async Task<JObject> RottenTomatoesLoadXDocumentAsync(String url)
+        {
+            Boolean retry = false;
+            try
+            {
+                return await RottenTomatoesThrottleLoadXDocumentAsync(url);
+            }
+            catch (RottenTomatoesThrottleException)
+            { retry = true; }
+            if (retry)
+            {
+                Thread.Sleep(150);
+                return await RottenTomatoesLoadXDocumentAsync(url);
+            }
+            return null;
+        }
 
 
         public static async Task<IEnumerable<Title>> GetExpandedMovieDetails(XDocument doc, Boolean OnUserBehalf = true)
@@ -101,7 +133,7 @@ namespace FlixSharp.Async
             return awaitedtitles;
         }
 
-        public static async Task<IEnumerable<Title>> GetCompleteMovieDetails(XDocument doc, Boolean OnUserBehalf = true)
+        public static async Task<IEnumerable<Title>> GetCompleteNetflixMovieDetails(XDocument doc, Boolean OnUserBehalf = true)
         {
             List<Task<Title>> titles = new List<Task<Title>>();
             var movieids = from movie
@@ -119,7 +151,7 @@ namespace FlixSharp.Async
             return awaitedtitles;
         }
 
-        public static async Task<IEnumerable<Person>> GetCompletePersonDetails(XDocument doc, Boolean OnUserBehalf = true)
+        public static async Task<IEnumerable<Person>> GetCompleteNetflixPersonDetails(XDocument doc, Boolean OnUserBehalf = true)
         {
             List<Task<Person>> people = new List<Task<Person>>();
             var personids = from person
@@ -202,7 +234,7 @@ namespace FlixSharp.Async
         }
     }
 
-    public class NetflixOverQuotaException : NetflixException
+    public class NetflixOverQuotaException : ApiException
     {
         public DateTime RetryAt { get; set; }
 
@@ -218,33 +250,46 @@ namespace FlixSharp.Async
                 this.RetryAt = new DateTime();
         }
     }
-    public class NetflixThrottleException : NetflixException
+    public class NetflixThrottleException : ApiException
     {
         public NetflixThrottleException(WebException ex) 
             : base("ERR_403_DEVELOPER_OVER_QPS", ex)
         {
         }
     }
-    public class NetflixException : WebException
+
+
+    public class NetflixApiException : ApiException
     {
-        public NetflixException(WebException ex)
-            : base(ex.Message, ex)
+        public NetflixApiException(ApiException ex)
+            : base("FlixSharp had some issues - Inner exception contains information", ex)
         {
         }
-        public NetflixException(String Message, WebException ex)
-            : base(Message, ex)
+        public NetflixApiException(String message, ApiException ex)
+            : base("FlixSharp had some issues - " + message, ex)
         {
         }
     }
 
-    public class NetflixApiException : Exception
+
+
+
+
+    public class ApiException : WebException
     {
-        public NetflixApiException(NetflixException ex)
-            : base("FlixSharp had some issues - Inner exception contains information", ex)
+        public ApiException(WebException ex)
+            : base(ex.Message, ex)
         {
         }
-        public NetflixApiException(String message, NetflixException ex)
-            : base("FlixSharp had some issues - " + message, ex)
+        public ApiException(String Message, WebException ex)
+            : base(Message, ex)
+        {
+        }
+    }
+    public class RottenTomatoesThrottleException : ApiException
+    {
+        public RottenTomatoesThrottleException(WebException ex)
+            : base("ERR_403_DEVELOPER_OVER_QPS", ex)///not sure what this is for RT
         {
         }
     }

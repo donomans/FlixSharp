@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -44,12 +47,13 @@
     <Compile Include="Helpers\AsyncHelpers.cs" />
     <Compile Include="Helpers\GeneralHelpers.cs" />
     <Compile Include="Holders\Enums.cs" />
+    <Compile Include="Holders\Interfaces.cs" />
     <Compile Include="Holders\Netflix\Misc.cs" />
     <Compile Include="Holders\Netflix\Title.cs" />
-    <Compile Include="Holders\Netflix\Titles.cs" />
-    <Compile Include="Holders\Netflix\People.cs" />
+    <Compile Include="Holders\Titles.cs" />
+    <Compile Include="Holders\People.cs" />
     <Compile Include="Holders\Netflix\Person.cs" />
-    <Compile Include="Holders\Netflix\SearchResults.cs" />
+    <Compile Include="Holders\SearchResults.cs" />
     <Compile Include="Holders\RottenTomatoes\Constants.cs" />
     <Compile Include="Holders\RottenTomatoes\Misc.cs" />
     <Compile Include="Holders\RottenTomatoes\Person.cs" />
@@ -62,16 +66,15 @@
     <Compile Include="Holders\Netflix\Constants.cs" />
     <Compile Include="Helpers\OAuthHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queries\RottenTomatoesFill.cs" />
-    <Compile Include="Queries\RottenTomatoesLogin.cs" />
-    <Compile Include="Queries\RottenTomatoesSearch.cs" />
+    <Compile Include="Queries\RottenTomatoes\Fill.cs" />
+    <Compile Include="Queries\RottenTomatoes\Login.cs" />
+    <Compile Include="Queries\RottenTomatoes\Search.cs" />
     <Compile Include="RedBox.cs" />
     <Compile Include="RottenTomatoes.cs" />
+    <None Include="packages.config" />
     <None Include="README" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Queries\RottenTomatoes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

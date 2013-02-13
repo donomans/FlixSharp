@@ -73,7 +73,7 @@ namespace FlixSharp.Queries.Netflix
                                     });
                     break;
                 case PersonExpansion.Complete:
-                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
+                    people.AddRange(await AsyncHelpers.GetCompleteNetflixPersonDetails(await persondoc));
                     break;
             }
 
@@ -136,7 +136,7 @@ namespace FlixSharp.Queries.Netflix
                     movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(await moviedoc));
                     break;
                 case TitleExpansion.Complete:
-                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(await moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetCompleteNetflixMovieDetails(await moviedoc));
                     break;
             }
 
@@ -188,7 +188,7 @@ namespace FlixSharp.Queries.Netflix
                     movies.AddRange(await AsyncHelpers.GetExpandedMovieDetails(await moviedoc));
                     break;
                 case TitleExpansion.Complete:
-                    movies.AddRange(await AsyncHelpers.GetCompleteMovieDetails(await moviedoc));
+                    movies.AddRange(await AsyncHelpers.GetCompleteNetflixMovieDetails(await moviedoc));
                     break;
             }
 
@@ -242,7 +242,7 @@ namespace FlixSharp.Queries.Netflix
                                     });
                     break;
                 case PersonExpansion.Complete:
-                    people.AddRange(await AsyncHelpers.GetCompletePersonDetails(await persondoc));
+                    people.AddRange(await AsyncHelpers.GetCompleteNetflixPersonDetails(await persondoc));
                     break;
             }
 

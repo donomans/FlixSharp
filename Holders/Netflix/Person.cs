@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders.Netflix
 {
-    public class Person : IResult
+    public class Person : IPerson
     {
         public Person()
         {
@@ -21,7 +21,7 @@ namespace FlixSharp.Holders.Netflix
             //_Parents = new HashSet<People>();
         }
 
-        public ResultType Type { get { return ResultType.Person; } }
+       // public ResultType Type { get { return ResultType.Person; } }
 
         public PersonExpansion Completeness { get { return completeness;} }
         public PersonExpansion completeness = PersonExpansion.Minimal;
@@ -39,6 +39,7 @@ namespace FlixSharp.Holders.Netflix
                     return id;
                 }
             }
+            private set { }
         }
         private String id = "";
         public String IdUrl { get; set; }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders.Netflix
 {
-    public class Title : IResult
+    public class Title : ITitle
     {
         public Title()
         {
@@ -30,7 +30,7 @@ namespace FlixSharp.Holders.Netflix
             completeness = Completeness;
         }
 
-        public ResultType Type { get { return ResultType.Movie; } }
+        //public ResultType Type { get { return ResultType.Movie; } }
 
         public TitleExpansion Completeness { get { return completeness;} }
         internal TitleExpansion completeness;

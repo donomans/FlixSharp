@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlixSharp.Holders.Netflix
+namespace FlixSharp.Holders
 {
-    public class People : IEnumerable<Person>
+    public class People : IEnumerable<IPerson>
     {
-        Dictionary<String, Person> _people = new Dictionary<String, Person>();
+        Dictionary<String, IPerson> _people = new Dictionary<String, IPerson>();
 
-        public void AddRange(IEnumerable<Person> people)
+        public void AddRange(IEnumerable<IPerson> people)
         {
-            foreach (Person p in people)
+            foreach (IPerson p in people)
                 if (_people.ContainsKey(p.Id))
                     _people[p.Id] = p;//.AddParent(this);
                 else
                     _people.Add(p.Id, p);//.AddParent(this));
         }
 
-        public Person Find(String id)
+        public IPerson Find(String id)
         {
             if (_people.ContainsKey(id))
                 return _people[id];
@@ -27,7 +27,7 @@ namespace FlixSharp.Holders.Netflix
                 return null;
         }
 
-        public IEnumerator<Person> GetEnumerator()
+        public IEnumerator<IPerson> GetEnumerator()
         {
             return _people.Values.GetEnumerator();
         }

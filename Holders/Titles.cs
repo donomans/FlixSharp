@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlixSharp.Holders.Netflix
+namespace FlixSharp.Holders
 {
-    public class Titles : IEnumerable<Title>
+    public class Titles : IEnumerable<ITitle>
     {
-        Dictionary<String, Title> _movies = new Dictionary<String, Title>();
+        Dictionary<String, ITitle> _movies = new Dictionary<String, ITitle>();
 
-        public Title Find(String id)
+        public ITitle Find(String id)
         {
             if (_movies.ContainsKey(id))
                 return _movies[id];
@@ -18,11 +18,13 @@ namespace FlixSharp.Holders.Netflix
                 return null;
         }
 
-        public void AddRange(IEnumerable<Title> movies)
+        public void AddRange(IEnumerable<ITitle> movies)
         {
-            foreach (Title m in movies)
+            foreach (ITitle m in movies)
             {
-                String id = m.Id + (m.SeasonId != "" ? ";" + m.SeasonId : "");
+                String id = m.Id + 
+                    ///gosh this is gross.
+                    (m is Netflix.Title ? ((m as Netflix.Title).SeasonId != "" ? ";" + (m as Netflix.Title).SeasonId : "") : "");
                 if (_movies.ContainsKey(id))
                     _movies[id] = m;//.AddParent(this);
                 else
@@ -30,7 +32,7 @@ namespace FlixSharp.Holders.Netflix
             }
         }
 
-        public IEnumerator<Title> GetEnumerator()
+        public IEnumerator<ITitle> GetEnumerator()
         {
             return _movies.Values.GetEnumerator();
         }
