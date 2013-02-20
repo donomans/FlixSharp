@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using FlixSharp.OAuth;
-using FlixSharp.Constants.Netflix;
+using FlixSharp.Helpers.OAuth;
+using FlixSharp.Holders.Netflix;
 using FlixSharp.Queries.Netflix;
 using System.Xml.Linq;
 using System.Threading.Tasks;
-using FlixSharp.Holders.Netflix;
 using FlixSharp.Queries;
 
-namespace FlixSharp//.Netflix
+namespace FlixSharp
 {
     public class Netflix
     {
@@ -75,7 +74,7 @@ namespace FlixSharp//.Netflix
         {
             _FillObjectsOnDemand = FillObjectsOnDemand;
             
-            NetflixLogin.CheckInformationSet();
+            Login.CheckInformationSet();
             if (_GetUserInfo == null)
                 _GetUserInfo = GetUserInfo;
         }
@@ -85,11 +84,11 @@ namespace FlixSharp//.Netflix
         public static NetflixSearch Search { get { return search; } }
         private static NetflixSearch search = new NetflixSearch();
 
-        public static NetflixFill Fill { get { return fill; } }
-        private static NetflixFill fill = new NetflixFill();
+        public static Fill Fill { get { return fill; } }
+        private static Fill fill = new Fill();
 
-        public static NetflixLogin Login { get { return login; } }
-        private static NetflixLogin login = new NetflixLogin();
+        public static Login Login { get { return login; } }
+        private static Login login = new Login();
 
     }
 }

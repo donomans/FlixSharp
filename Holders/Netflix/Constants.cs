@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlixSharp.Constants.Netflix
+namespace FlixSharp.Holders.Netflix
 {
-    internal static class NetflixConstants
+    internal static class Constants
     {
         public const String RequestUrl = "http://api-public.netflix.com/oauth/request_token";
         public const String AccessUrl = "http://api-public.netflix.com/oauth/access_token";

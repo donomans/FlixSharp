@@ -1,4 +1,4 @@
-﻿using FlixSharp.Async;
+﻿using FlixSharp.Helpers.Async;
 using FlixSharp.Holders;
 using FlixSharp.Holders.RottenTomatoes;
 using System;

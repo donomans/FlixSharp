@@ -46,6 +46,7 @@
     <Compile Include="Amazon.cs" />
     <Compile Include="Helpers\AsyncHelpers.cs" />
     <Compile Include="Helpers\GeneralHelpers.cs" />
+    <Compile Include="Helpers\Netflix\AsyncFiller.cs" />
     <Compile Include="Holders\Enums.cs" />
     <Compile Include="Holders\Interfaces.cs" />
     <Compile Include="Holders\Netflix\Misc.cs" />

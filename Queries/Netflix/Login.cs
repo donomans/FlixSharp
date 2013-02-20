@@ -1,5 +1,5 @@
-﻿using FlixSharp.Constants.Netflix;
-using FlixSharp.OAuth;
+﻿using FlixSharp.Holders.Netflix;
+using FlixSharp.Helpers.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Queries.Netflix
 {
-    public class NetflixLogin
+    public class Login
     {
         public static String ConsumerKey { get { return consumerkey; } }
         private static String consumerkey;
@@ -28,7 +28,7 @@ namespace FlixSharp.Queries.Netflix
         /// <param name="ApplicationName">[Optional] If you are not sure what Netflix 
         /// thinks your application name is, you may set it upon retrieving it from 
         /// the result of the GetLoginUrl request - your callback will receive it as a parameter</param>
-        public NetflixLogin SetCredentials(String ConsumerKey, String SharedSecret, String ApplicationName = "")
+        public Login SetCredentials(String ConsumerKey, String SharedSecret, String ApplicationName = "")
         {
             consumerkey = ConsumerKey;
             sharedsecret = SharedSecret;
@@ -55,7 +55,7 @@ namespace FlixSharp.Queries.Netflix
         public String GetRequestUrl()
         {
             CheckInformationSet();
-            return OAuthHelpers.GetOAuthRequestUrl(SharedSecret, ConsumerKey, NetflixConstants.RequestUrl, "GET");
+            return OAuthHelpers.GetOAuthRequestUrl(SharedSecret, ConsumerKey, Constants.RequestUrl, "GET");
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace FlixSharp.Queries.Netflix
             CheckInformationSet();
             Dictionary<String, String> extraParams = new Dictionary<String, String>();
             extraParams.Add("application_name", ApplicationName);
-            return OAuthHelpers.GetOAuthLoginUrl(ConsumerKey, Token, Callback, NetflixConstants.LoginUrl, extraParams);
+            return OAuthHelpers.GetOAuthLoginUrl(ConsumerKey, Token, Callback, Constants.LoginUrl, extraParams);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace FlixSharp.Queries.Netflix
         public String GetAccessUrl(String Token, String TokenSecret)
         {
             CheckInformationSet();
-            return OAuthHelpers.GetOAuthAccessUrl(SharedSecret, ConsumerKey, NetflixConstants.AccessUrl, Token, TokenSecret);
+            return OAuthHelpers.GetOAuthAccessUrl(SharedSecret, ConsumerKey, Constants.AccessUrl, Token, TokenSecret);
         }
 
         internal static void CheckInformationSet()

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace FlixSharp.OAuth
+namespace FlixSharp.Helpers.OAuth
 {
     internal class OAuthHelpers
     {
