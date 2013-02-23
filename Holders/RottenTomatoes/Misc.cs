@@ -33,10 +33,12 @@ namespace FlixSharp.Holders.RottenTomatoes
 
     public enum RottenRating
     {
-        Fresh,
+        CertifiedFresh,
         Upright,
         /// some others in here
-        Rotten
+        Spilled,
+        Rotten,
+        None
     }
 
 

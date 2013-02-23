@@ -27,7 +27,7 @@ namespace FlixSharp.Holders.RottenTomatoes
         public String RottenTomatoesSiteUrl { get; set; }
 
         public List<Person> Actors { get; set; }
-        public List<Person> Directors { get; set; }
+        public List<String> Directors { get; set; }
     }
 
 }

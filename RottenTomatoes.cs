@@ -1,4 +1,5 @@
 ﻿using FlixSharp.Queries;
+using FlixSharp.Queries.RottenTomatoes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,13 @@ namespace FlixSharp
         public RottenTomatoes()
         { }
 
-        public static RottenTomatoesSearch Search { get { return search; } }
-        private static RottenTomatoesSearch search = new RottenTomatoesSearch();
+        public static Search Search { get { return search; } }
+        private static Search search = new Search();
 
-        public static RottenTomatoesFill Fill { get { return fill; } }
-        private static RottenTomatoesFill fill = new RottenTomatoesFill();
+        public static Fill Fill { get { return fill; } }
+        private static Fill fill = new Fill();
 
-        public static RottenTomatoesLogin Login { get { return login; } }
-        private static RottenTomatoesLogin login = new RottenTomatoesLogin();
+        public static Login Login { get { return login; } }
+        private static Login login = new Login();
     }
 }

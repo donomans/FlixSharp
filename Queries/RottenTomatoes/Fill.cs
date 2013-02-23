@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlixSharp.Queries
+namespace FlixSharp.Queries.RottenTomatoes
 {
-    public class RottenTomatoesFill
+    public class Fill
     {
     }
 }

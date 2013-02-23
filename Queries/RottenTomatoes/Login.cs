@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlixSharp.Queries
+namespace FlixSharp.Queries.RottenTomatoes
 {
-    public class RottenTomatoesLogin
+    public class Login
     {
         public static String ConsumerKey { get { return consumerkey; } }
         private static String consumerkey;
@@ -15,7 +15,7 @@ namespace FlixSharp.Queries
         private static Boolean informationset = false;
 
 
-        public RottenTomatoesLogin SetCredentials(String ConsumerKey)
+        public Login SetCredentials(String ConsumerKey)
         {
             consumerkey = ConsumerKey;
             informationset = true;

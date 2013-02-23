@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace FlixSharp.Queries.Netflix
 {
-    public class NetflixSearch
+    public class Search
     {
         /// <summary>
         /// Make a catalog/titles search request
@@ -22,7 +22,7 @@ namespace FlixSharp.Queries.Netflix
         /// <param name="OnUserBehalf">Make the request on the user's behalf if a 
         /// GetCurrentUserNetflixUserInfo delegate was provided during creation.</param>
         /// <returns></returns>
-        public async Task<SearchResults> Search(String SearchTerm, Int32 Limit = 20, Boolean OnUserBehalf = true,
+        public async Task<SearchResults> SearchEverything(String SearchTerm, Int32 Limit = 20, Boolean OnUserBehalf = true,
             TitleExpansion TitleExpansionLevel = TitleExpansion.Minimal,
             PersonExpansion PersonExpansionLevel = PersonExpansion.Minimal)
         {

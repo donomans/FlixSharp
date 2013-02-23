@@ -81,8 +81,8 @@ namespace FlixSharp
 
 
 
-        public static NetflixSearch Search { get { return search; } }
-        private static NetflixSearch search = new NetflixSearch();
+        public static Search Search { get { return search; } }
+        private static Search search = new Search();
 
         public static Fill Fill { get { return fill; } }
         private static Fill fill = new Fill();
