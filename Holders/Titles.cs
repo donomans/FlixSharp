@@ -10,6 +10,12 @@ namespace FlixSharp.Holders
     {
         Dictionary<String, ITitle> _movies = new Dictionary<String, ITitle>();
 
+        public Titles() { }
+        public Titles(IEnumerable<ITitle> movies)
+        {
+            this.AddRange(movies);
+        }
+
         public ITitle Find(String id)
         {
             if (_movies.ContainsKey(id))
