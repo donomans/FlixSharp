@@ -10,6 +10,7 @@ namespace FlixSharp.Holders
     {
         String Id { get; }
         String FullTitle { get; }
+        Int32 Year { get; set; }
     }
 
     public interface IPerson

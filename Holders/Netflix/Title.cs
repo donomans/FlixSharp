@@ -69,6 +69,11 @@ namespace FlixSharp.Holders.Netflix
         private String seasonid = "";
         public String IdUrl { get; set; }
 
+        public String FullId
+        {
+            get { return Id + SeasonId != "" ? ";" + SeasonId : ""; }
+        }
+
         public NetflixType NetflixType { get; set; }
 
         #region Minimal

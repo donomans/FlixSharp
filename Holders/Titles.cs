@@ -48,6 +48,5 @@ namespace FlixSharp.Holders
             return GetEnumerator();
         }
 
-
     }
 }
