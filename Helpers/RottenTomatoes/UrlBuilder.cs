@@ -49,5 +49,10 @@ namespace FlixSharp.Helpers.RottenTomatoes
         {
             return String.Format(Constants.UpcomingDVDsUrl, Login.ConsumerKey, Country, Limit, Page);
         }
+
+        public static String MoviesInfoUrl(String Id)
+        {
+            return String.Format(Constants.MoviesInfoUrl, Login.ConsumerKey, Id);
+        }
     }
 }

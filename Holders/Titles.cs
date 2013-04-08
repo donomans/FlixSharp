@@ -28,9 +28,7 @@ namespace FlixSharp.Holders
         {
             foreach (ITitle m in movies)
             {
-                String id = m.Id + 
-                    ///gosh this is gross.
-                    (m is Netflix.Title ? ((m as Netflix.Title).SeasonId != "" ? ";" + (m as Netflix.Title).SeasonId : "") : "");
+                String id = m.FullId;
                 if (_movies.ContainsKey(id))
                     _movies[id] = m;//.AddParent(this);
                 else

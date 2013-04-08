@@ -9,6 +9,7 @@ namespace FlixSharp.Holders
     public interface ITitle
     {
         String Id { get; }
+        String FullId { get; }
         String FullTitle { get; }
         Int32 Year { get; set; }
     }

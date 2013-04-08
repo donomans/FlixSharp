@@ -225,6 +225,20 @@ namespace FlixSharp.Queries.RottenTomatoes
     public class FillTitles
     {
         #region Detailed Info
+        /// <summary>
+        /// Full title information from a Rotten Tomatoes Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public async Task<Title> GetMoviesInfo(String Id)
+        {
+            Login.CheckInformationSet();
+
+            var moviejson = AsyncHelpers.RottenTomatoesLoadXDocumentAsync(
+                UrlBuilder.MoviesInfoUrl(Id));
+
+            return (await Fill.GetBaseTitleInfo(moviejson)).FirstOrDefault();
+        }
         #endregion
     }
 }

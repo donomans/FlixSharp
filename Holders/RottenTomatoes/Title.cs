@@ -9,7 +9,8 @@ namespace FlixSharp.Holders.RottenTomatoes
     public class Title: ITitle
     {
         public String Id { get; set; }
-        
+
+        public String FullId { get { return Id; } }
         public String FullTitle { get; set; }
         public Int32 Year { get; set; }
         public List<String> Genres { get; set; }
