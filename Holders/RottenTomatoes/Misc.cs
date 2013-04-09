@@ -9,7 +9,7 @@ namespace FlixSharp.Holders.RottenTomatoes
     public class ReleaseDate
     {
         public ReleaseDateType ReleaseType { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
     }
 
     public class Rating
@@ -21,7 +21,7 @@ namespace FlixSharp.Holders.RottenTomatoes
 
     public enum ReleaseDateType
     {
-        Theatrical,
+        Theater,
         DVD
     }
 

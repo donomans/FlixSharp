@@ -72,16 +72,16 @@ namespace FlixSharp.Queries.RottenTomatoes
                         }
                     } : new List<Rating>(),
                     ReleaseDates = movie["release_dates"].HasValues ? new List<ReleaseDate>
-                    {
+                    {///this is dumb, but I can't easily access the JProperty.Name value in a LINQ statement, for some reason
                         new ReleaseDate
                         {
-                            ReleaseType = ReleaseDateType.Theatrical,
-                            Date = movie["release_dates"]["theater"] != null ? DateTime.Parse(movie["release_dates"]["theater"].ToString()) : DateTime.MinValue
+                            ReleaseType = ReleaseDateType.Theater,
+                            Date = movie["release_dates"]["theater"] != null ? (DateTime?)DateTime.Parse(movie["release_dates"]["theater"].ToString()) : null
                         },
                         new ReleaseDate
                         {
                             ReleaseType = ReleaseDateType.DVD,
-                            Date = movie["release_dates"]["dvd"] != null ? DateTime.Parse(movie["release_dates"]["dvd"].ToString()) : DateTime.MinValue
+                            Date = movie["release_dates"]["dvd"] != null ? (DateTime?)DateTime.Parse(movie["release_dates"]["dvd"].ToString()) : null
                         }
                     } : new List<ReleaseDate>(),
                     Synopsis = movie["synopsis"].ToString(),
