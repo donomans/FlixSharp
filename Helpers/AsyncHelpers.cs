@@ -78,7 +78,7 @@ namespace FlixSharp.Helpers.Async
             return null;
         }
 
-        private static async Task<JObject> RottenTomatoesThrottleLoadXDocumentAsync(String url)
+        private static async Task<JObject> RottenTomatoesThrottleLoadJObjectAsync(String url)
         {
             try
             {
@@ -94,23 +94,54 @@ namespace FlixSharp.Helpers.Async
                 //throw;
             }
         }
-        public static async Task<JObject> RottenTomatoesLoadXDocumentAsync(String url)
+        public static async Task<JObject> RottenTomatoesLoadJObjectAsync(String url)
         {
             Boolean retry = false;
             try
             {
-                return await RottenTomatoesThrottleLoadXDocumentAsync(url);
+                return await RottenTomatoesThrottleLoadJObjectAsync(url);
             }
             catch (RottenTomatoesThrottleException)
             { retry = true; }
             if (retry)
             {
                 Thread.Sleep(150);
-                return await RottenTomatoesLoadXDocumentAsync(url);
+                return await RottenTomatoesLoadJObjectAsync(url);
             }
             return null;
         }
-
+        private static async Task<JArray> RottenTomatoesThrottleLoadJArrayAsync(String url)
+        {
+            try
+            {
+                String json = await LoadStringAsync(url, LeakType.RottenTomatoes);
+                return JArray.Parse(json);
+            }
+            catch (WebException ex)
+            {
+                //if (ex.Response.Headers["X-Mashery-Error-Code"] == "ERR_403_DEVELOPER_OVER_QPS")///what is the RT equivalent?
+                //{
+                throw new RottenTomatoesThrottleException(ex);
+                //}
+                //throw;
+            }
+        }
+        public static async Task<JArray> RottenTomatoesLoadJarrayAsync(String url)
+        {
+            Boolean retry = false;
+            try
+            {
+                return await RottenTomatoesThrottleLoadJArrayAsync(url);
+            }
+            catch (RottenTomatoesThrottleException)
+            { retry = true; }
+            if (retry)
+            {
+                Thread.Sleep(150);
+                return await RottenTomatoesLoadJarrayAsync(url);
+            }
+            return null;
+        }
 
     }
 

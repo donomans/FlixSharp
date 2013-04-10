@@ -12,10 +12,10 @@ namespace FlixSharp.Queries.RottenTomatoes
 {
     public class Search
     {
-        public async Task<Titles> SearchTitles(String Title, Int32 Limit = 10)
+        public async Task<Titles> SearchTitles(String Title, Int32 Limit = 10, Int32 Page = 1)
         {
             Login.CheckInformationSet();
-            var moviejson = AsyncHelpers.RottenTomatoesLoadXDocumentAsync(UrlBuilder.SearchUrl(Title, Limit));
+            var moviejson = AsyncHelpers.RottenTomatoesLoadJObjectAsync(UrlBuilder.SearchUrl(Title, Limit, Page));
            
             return new Titles(await Fill.GetBaseTitleInfo(moviejson));
         }

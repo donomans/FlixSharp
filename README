@@ -1,4 +1,4 @@
-﻿A C# .Net 4.5 Netflix, Rotten Tomatoes, Amazon API Wrapper for doing all major API actions
+﻿A C# .Net 4.5 (async) Netflix, Rotten Tomatoes, Amazon API Wrapper for doing all major API actions
 
 Netflix:
 	- OAuth Logins/requests
@@ -10,8 +10,9 @@ Netflix:
 Rotten Tomatoes:
 	- Search
 	- Lists (Movies/DVDs)
-(Todo) - Title expansion
-(Todo) - Person expansion
+    - Title Info (Movies Info)
+(Todo) - Extra Title queries (Cast Info, Movie Clips, Movies Reviews, Movies Similar, Movies Alias)
+
 
 Amazon:
 (Todo) - Search
@@ -20,6 +21,7 @@ Amazon:
 
 Examples:
 
+Netflix:
 1) Setup:
 
 using FlixSharp;

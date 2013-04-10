@@ -9,7 +9,7 @@ namespace FlixSharp.Holders.RottenTomatoes
     internal static class Constants
     {
         public const String BaseV1Url = "http://api.rottentomatoes.com/api/public/v1.0.json?apikey={0}";
-        public const String SearchUrl = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey={0}&q={1}";
+        public const String SearchUrl = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey={0}&q={1}&page_limit={2}&page={3}";
 
         public const String BoxOfficeUrl = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?limit={2}&country={1}&apikey={0}";
         public const String InTheatersUrl = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit={2}&&page={3}&country={1}&apikey={0}";
