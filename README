@@ -10,7 +10,7 @@ Netflix:
 Rotten Tomatoes:
 	- Search
 	- Lists (Movies/DVDs)
-    - Title Info (Movies Info)
+	- Title Info (Movies Info)
 (Todo) - Extra Title queries (Cast Info, Movie Clips, Movies Reviews, Movies Similar, Movies Alias)
 
 
