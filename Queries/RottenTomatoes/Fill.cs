@@ -20,9 +20,120 @@ namespace FlixSharp.Queries.RottenTomatoes
         {
             dynamic dynjson = await json;
             List<Title> movies = new List<Title>(dynjson.movies.Count);
+            foreach (var m in dynjson.movies)
+            {
+                Title t = new Title();
+                t.Id = m.id;
+                t.FullTitle = m.title;
+                t.Year = m.year;
+                t.Rating = (MpaaRating)Enum.Parse(typeof(MpaaRating), m.mpaa_rating.ToString().Replace("-", ""));
+                t.RunTime = m.runtime != null && m.runtime.ToString() != "" ? m.runtime : 0;
+                t.CriticsConsensus = m.critics_consensus;
+                if (m.ratings != null)
+                {
+                    if (m.ratings.critics_score != null)
+                        t.Ratings.Add(new Rating()
+                        {
+                            Type = RatingType.Critic,
+                            RottenTomatoRating = m.ratings.critics_rating != null ? 
+                            (RottenRating)Enum.Parse(typeof(RottenRating), m.ratings.critics_rating.ToString().Replace(" ", "")) 
+                            : RottenRating.None,
+                            Score = m.ratings.critics_score
+                        });
+                    if (m.ratings.audience_score != null)
+                        t.Ratings.Add(new Rating()
+                        {
+                            Type = RatingType.Audience,
+                            RottenTomatoRating = m.ratings.audience_rating != null ? 
+                            (RottenRating)Enum.Parse(typeof(RottenRating), m.ratings.audience_rating.ToString().Replace(" ", "")) 
+                            : RottenRating.None,
+                            Score = m.ratings.audience_score
+                        });
+                }
+                if(m.release_dates != null)
+                {
+                    if (m.release_dates.theater != null)
+                    {
+                        t.ReleaseDates.Add(new ReleaseDate()
+                        {
+                            Date = (DateTime?)m.release_dates.theater,//DateTime.Parse(m.release_dates.theater),
+                            ReleaseType = ReleaseDateType.Theater
+                        });
+                    }
+                    if (m.release_dates.dvd != null)
+                    {
+                        t.ReleaseDates.Add(new ReleaseDate()
+                        {
+                            Date = (DateTime?)m.release_dates.dvd,//DateTime.Parse(m.release_dates.dvd),
+                            ReleaseType = ReleaseDateType.DVD
+                        });
+                    }
+                }
+                t.Synopsis = m.synopsis;
+                if (m.alternate_ids != null)
+                    t.AlternateIds.Add(new AlternateId()
+                    {
+                        Id = m.alternate_ids.imdb,
+                        Type = AlternateIdType.Imdb
+                    });
+                t.RottenTomatoesSiteUrl = m.links != null ? m.links.alternate : "";
+                t.Studio = m.studio;
+                if (m.posters != null)
+                {
+                    if (m.posters.thumbnail != null)
+                        t.Posters.Add(new Poster()
+                        { 
+                            Type = PosterType.Thumbnail,
+                            Url = m.posters.thumbnail
+                        });
+                    if (m.posters.profile != null)
+                        t.Posters.Add(new Poster()
+                        {
+                            Type = PosterType.Profile,
+                            Url = m.posters.profile
+                        });
+                    if (m.posters.detailed != null)
+                        t.Posters.Add(new Poster()
+                        {
+                            Type = PosterType.Detailed,
+                            Url = m.posters.detailed
+                        });
+                    if (m.posters.original != null)
+                        t.Posters.Add(new Poster()
+                        {
+                            Type = PosterType.Original,
+                            Url = m.posters.original
+                        });
+                }
+                if (m.abridged_cast != null)
+                {
+                    foreach (var actor in m.abridged_cast)
+                    {
+                        JArray chars = actor.characters;
+                        //var watwat = wat.Select(j => j.ToString());
+                        t.Actors.Add(new Person()
+                        {
+                            Id = actor.id,
+                            Name = actor.name,
+                            Characters = actor.characters != null ? 
+                            new List<String>(chars.Select(j => j.ToString()))
+                            : new List<String>()
+                        });
+                    }
+                }
+                if (m.abridged_directors != null)
+                {
+                    foreach (var director in m.abridged_directors)
+                        t.Directors.Add(director.name);
+                }
+                if (m.genres != null)
+                    t.Genres.AddRange(m.genres);
+                
+                movies.Add(t);
+            }
             //dynamic dynjson = json.Result;
             ///rewrite this for dynamic usage?
-            throw new Exception(dynjson.movies[0].id);
+            //throw new Exception(dynjson.movies[0].id);
             //movies.AddRange(
             //    from movie
             //    in dynjson.Children()

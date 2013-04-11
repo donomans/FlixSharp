@@ -8,6 +8,16 @@ namespace FlixSharp.Holders.RottenTomatoes
 {
     public class Title: ITitle
     {
+        public Title()
+        {
+            Genres = new List<String>();
+            AlternateIds = new List<AlternateId>();
+            ReleaseDates = new List<ReleaseDate>();
+            Ratings = new List<Rating>();
+            Posters = new List<Poster>();
+            Actors = new List<Person>();
+            Directors = new List<String>();
+        }
         public String Id { get; set; }
 
         public String FullId { get { return Id; } }
