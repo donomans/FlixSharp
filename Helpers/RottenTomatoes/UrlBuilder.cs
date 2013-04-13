@@ -59,5 +59,9 @@ namespace FlixSharp.Helpers.RottenTomatoes
         {
             return String.Format(Constants.CastInfoUrl, Login.ConsumerKey, Id);
         }
+        public static String ClipsUrl(String Id)
+        {
+            return String.Format(Constants.ClipsUrl, Login.ConsumerKey, Id);
+        }
     }
 }

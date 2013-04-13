@@ -24,5 +24,6 @@ namespace FlixSharp.Holders.RottenTomatoes
         public const String MoviesInfoUrl = "http://api.rottentomatoes.com/api/public/v1.0/movies/{1}.json?apikey={0}";
         
         public const String CastInfoUrl = "http://api.rottentomatoes.com/api/public/v1.0/movies/{1}/cast.json?apikey={0}";
+        public const String ClipsUrl = "http://api.rottentomatoes.com/api/public/v1.0/movies/{1}/clips.json?apikey={0}";
     }
 }

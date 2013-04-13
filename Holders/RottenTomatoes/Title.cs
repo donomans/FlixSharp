@@ -39,6 +39,15 @@ namespace FlixSharp.Holders.RottenTomatoes
 
         public List<Person> Actors { get; set; }
         public List<String> Directors { get; set; }
+
+        public List<Clip> Clips { get; set; }
     }
 
+    public class Clip
+    {
+        public String Title { get; set; }
+        public Int32 Duration { get; set; }
+        public String ThumbnailUrl { get; set; }
+        public String SourceUrl { get; set; }
+    }
 }

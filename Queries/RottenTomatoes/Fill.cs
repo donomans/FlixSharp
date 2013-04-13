@@ -329,6 +329,29 @@ namespace FlixSharp.Queries.RottenTomatoes
 
             return (await Fill.GetBaseTitleInfo(moviejson)).FirstOrDefault();
         }
+
+        public async Task<List<Clip>> GetClips(String Id)
+        {
+            Login.CheckInformationSet();
+
+            dynamic clipsjson = await AsyncHelpers.RottenTomatoesLoadJObjectAsync(
+                UrlBuilder.ClipsUrl(Id));
+
+            List<Clip> clips = new List<Clip>();
+
+            foreach (var clip in clipsjson.clips)
+            {
+                Clip c = new Clip()
+                {
+                    Title = clip.title,
+                    Duration = clip.duration,
+                    ThumbnailUrl = clip.thumbnail,
+                    SourceUrl = clip.links != null ? clip.links.alternate : ""
+                };
+                clips.Add(c);
+            }
+            return clips;
+        }
         #endregion
     }
 
