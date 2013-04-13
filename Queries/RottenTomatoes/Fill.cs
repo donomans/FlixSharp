@@ -15,6 +15,7 @@ namespace FlixSharp.Queries.RottenTomatoes
     {
         public FillLists Lists = new FillLists();
         public FillTitles Titles = new FillTitles();
+        public FillPeople People = new FillPeople();
 
         internal static async Task<List<Title>> GetBaseTitleInfo(Task<JObject> json)
         {
@@ -309,8 +310,6 @@ namespace FlixSharp.Queries.RottenTomatoes
             return new Titles(await Fill.GetBaseTitleInfo(moviejson));
         }
         #endregion
-
-        
     }
 
     public class FillTitles
@@ -331,5 +330,32 @@ namespace FlixSharp.Queries.RottenTomatoes
             return (await Fill.GetBaseTitleInfo(moviejson)).FirstOrDefault();
         }
         #endregion
+    }
+
+    public class FillPeople
+    {
+        public async Task<People> GetCast(String Id)
+        {
+            Login.CheckInformationSet();
+
+            dynamic castjson = await AsyncHelpers.RottenTomatoesLoadJObjectAsync(
+                UrlBuilder.CastInfoUrl(Id));
+
+            People people = new People();
+            foreach (var cast in castjson.cast)
+            {
+                Person p = new Person()
+                {
+                    Id = cast.id,
+                    Name = cast.name,
+                    Characters = cast.characters != null ?
+                         new List<String>(cast.characters)
+                         : new List<String>()
+                };
+                people.Add(p);
+            }
+
+            return people;
+        }
     }
 }

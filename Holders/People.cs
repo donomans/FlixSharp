@@ -18,6 +18,13 @@ namespace FlixSharp.Holders
                 else
                     _people.Add(p.Id, p);//.AddParent(this));
         }
+        public void Add(IPerson person)
+        {
+            if (_people.ContainsKey(person.Id))
+                _people[person.Id] = person;
+            else
+                _people.Add(person.Id, person);
+        }
 
         public IPerson Find(String id)
         {

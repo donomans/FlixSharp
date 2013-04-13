@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlixSharp.Holders.RottenTomatoes
 {
-    public class Person
+    public class Person : IPerson
     {
         public String Id { get; set; }
         public String Name { get; set; }

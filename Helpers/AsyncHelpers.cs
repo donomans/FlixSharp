@@ -126,7 +126,7 @@ namespace FlixSharp.Helpers.Async
                 //throw;
             }
         }
-        public static async Task<JArray> RottenTomatoesLoadJarrayAsync(String url)
+        public static async Task<JArray> RottenTomatoesLoadJArrayAsync(String url)
         {
             Boolean retry = false;
             try
@@ -138,7 +138,7 @@ namespace FlixSharp.Helpers.Async
             if (retry)
             {
                 Thread.Sleep(150);
-                return await RottenTomatoesLoadJarrayAsync(url);
+                return await RottenTomatoesLoadJArrayAsync(url);
             }
             return null;
         }
