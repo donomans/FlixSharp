@@ -379,7 +379,27 @@ namespace FlixSharp.Queries.RottenTomatoes
             }
             return reviews;
         }
+
+        public async Task<List<Title>> GetSimilarMovies(String Id, Int32 Limit = 5)
+        {
+            Login.CheckInformationSet();
+
+            var similarjson = AsyncHelpers.RottenTomatoesLoadJObjectAsync(
+                UrlBuilder.SimilarMoviesUrl(Id));
+
+            return await Fill.GetBaseTitleInfo(similarjson);
+        }
         #endregion
+
+        public async Task<Title> GetTitleByAlias(String Id, AlternateIdType IdType = AlternateIdType.Imdb)
+        {
+            Login.CheckInformationSet();
+
+            var moviejson = AsyncHelpers.RottenTomatoesLoadJObjectAsync(
+                UrlBuilder.MovieAliasUrl(Id, IdType));
+
+            return (await Fill.GetBaseTitleInfo(moviejson)).FirstOrDefault();
+        }
     }
 
     public class FillPeople

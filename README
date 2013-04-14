@@ -13,8 +13,9 @@ Rotten Tomatoes:
 	- Title Info (Movies Info)
 	- Cast Info
 	- Movie Clips
-(Todo) - Extra Title queries (Movies Reviews, Movies Similar, Movies Alias)
-
+	- Movie Reviews
+	- Similar Movies
+	- Movies by Alias (search by IMDB id)
 
 Amazon:
 (Todo) - Search

@@ -68,5 +68,14 @@ namespace FlixSharp.Helpers.RottenTomatoes
             return String.Format(Constants.ReviewsUrl, Login.ConsumerKey, Id, 
                 ReviewType.ToString().ToLower(), Country, Limit, Page);
         }
+        public static String SimilarMoviesUrl(String Id, Int32 Limit = 5)
+        {
+            return String.Format(Constants.SimilarMoviesUrl, Login.ConsumerKey, Id, Limit);
+        }
+
+        public static String MovieAliasUrl(String Id, AlternateIdType IdType)
+        {
+            return String.Format(Constants.MovieAliasUrl, Login.ConsumerKey, Id, IdType.ToString().ToLower());
+        }
     }
 }
