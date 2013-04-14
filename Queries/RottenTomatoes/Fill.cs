@@ -352,6 +352,33 @@ namespace FlixSharp.Queries.RottenTomatoes
             }
             return clips;
         }
+
+        public async Task<List<Review>> GetReviews(String Id, ReviewType ReviewType, String Country = "us", Int32 Limit = 10, Int32 Page = 1)
+        {
+            Login.CheckInformationSet();
+
+            dynamic reviewsjson = await AsyncHelpers.RottenTomatoesLoadJObjectAsync(
+                UrlBuilder.ReviewsUrl(Id, ReviewType, Country, Limit, Page));
+
+            List<Review> reviews = new List<Review>(reviewsjson.total);
+
+            foreach (var review in reviewsjson.reviews)
+            {
+                Review r = new Review()
+                {
+                    Critic = review.critic,
+                    Date = review.date != null ?
+                    (DateTime?)DateTime.Parse(review.date) : null,
+                    Freshness = review.freshness != null ?
+                    (RottenRating)Enum.Parse(typeof(RottenRating), review.freshness, true) : RottenRating.None,
+                    Publication = review.publication,
+                    Quote = review.quote,
+                    SourceUrl = review.links != null ? review.links.review : ""
+                };
+                reviews.Add(r);
+            }
+            return reviews;
+        }
         #endregion
     }
 

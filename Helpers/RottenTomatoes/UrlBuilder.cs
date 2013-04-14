@@ -63,5 +63,10 @@ namespace FlixSharp.Helpers.RottenTomatoes
         {
             return String.Format(Constants.ClipsUrl, Login.ConsumerKey, Id);
         }
+        public static String ReviewsUrl(String Id, ReviewType ReviewType = ReviewType.All, String Country = "us", Int32 Limit = 10, Int32 Page = 1)
+        {
+            return String.Format(Constants.ReviewsUrl, Login.ConsumerKey, Id, 
+                ReviewType.ToString().ToLower(), Country, Limit, Page);
+        }
     }
 }

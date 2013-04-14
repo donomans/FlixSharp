@@ -57,19 +57,39 @@ namespace FlixSharp.Holders.RottenTomatoes
         Original
     }
 
-    //public enum RoleType
-    //{
-    //    Actor,
-    //    Director
-    //}
-
     public class AlternateId
     {
         public AlternateIdType Type { get; set; }
         public String Id { get; set; }
     }
+
     public enum AlternateIdType
     {
         Imdb
+    }
+
+    public class Clip
+    {
+        public String Title { get; set; }
+        public Int32 Duration { get; set; }
+        public String ThumbnailUrl { get; set; }
+        public String SourceUrl { get; set; }
+    }
+
+    public class Review
+    {
+        public String Critic { get; set; }
+        public DateTime? Date { get; set; }
+        public RottenRating Freshness { get; set; }
+        public String Publication { get; set; }
+        public String Quote { get; set; }
+        public String SourceUrl { get; set; }
+    }
+
+    public enum ReviewType
+    {
+        All,
+        Top_Critic,
+        DVD
     }
 }
