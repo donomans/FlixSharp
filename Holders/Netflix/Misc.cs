@@ -103,11 +103,7 @@ namespace FlixSharp.Holders.Netflix
         public TvRating TvRating;
     }
 
-    public enum RatingType
-    {
-        Mpaa,
-        TV
-    }
+    
 
     [Flags]
     public enum Format

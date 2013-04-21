@@ -45,7 +45,7 @@ namespace FlixSharp.Queries.RottenTomatoes
                 if (m.ratings.critics_score != null)
                     t.Ratings.Add(new Rating()
                     {
-                        Type = RatingType.Critic,
+                        Type = RottenRatingType.Critic,
                         RottenTomatoRating = m.ratings.critics_rating != null ?
                         (RottenRating)Enum.Parse(typeof(RottenRating), m.ratings.critics_rating.ToString().Replace(" ", ""))
                         : RottenRating.None,
@@ -54,7 +54,7 @@ namespace FlixSharp.Queries.RottenTomatoes
                 if (m.ratings.audience_score != null)
                     t.Ratings.Add(new Rating()
                     {
-                        Type = RatingType.Audience,
+                        Type = RottenRatingType.Audience,
                         RottenTomatoRating = m.ratings.audience_rating != null ?
                         (RottenRating)Enum.Parse(typeof(RottenRating), m.ratings.audience_rating.ToString().Replace(" ", ""))
                         : RottenRating.None,

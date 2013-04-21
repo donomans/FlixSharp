@@ -22,4 +22,9 @@ namespace FlixSharp.Holders
         PG,
         None
     }
+    public enum RatingType
+    {
+        Mpaa,
+        TV
+    }
 }

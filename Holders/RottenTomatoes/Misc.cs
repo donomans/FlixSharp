@@ -14,7 +14,7 @@ namespace FlixSharp.Holders.RottenTomatoes
 
     public class Rating
     {
-        public RatingType Type { get; set; }
+        public RottenRatingType Type { get; set; }
         public RottenRating RottenTomatoRating { get; set; }
         public Int32 Score { get; set; }
     }
@@ -25,7 +25,7 @@ namespace FlixSharp.Holders.RottenTomatoes
         DVD
     }
 
-    public enum RatingType
+    public enum RottenRatingType
     {
         Critic,
         Audience
