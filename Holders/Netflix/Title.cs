@@ -74,6 +74,8 @@ namespace FlixSharp.Holders.Netflix
             get { return Id + (SeasonId != "" ? ";" + SeasonId : ""); }
         }
 
+        public TitleSource Source { get { return TitleSource.Netflix; } }
+
         public NetflixType NetflixType { get; set; }
 
         #region Minimal

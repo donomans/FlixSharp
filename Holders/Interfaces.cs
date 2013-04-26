@@ -12,6 +12,14 @@ namespace FlixSharp.Holders
         String FullId { get; }
         String FullTitle { get; }
         Int32 Year { get; set; }
+        TitleSource Source { get; }
+    }
+
+    public enum TitleSource
+    {
+        Netflix,
+        RottenTomatoes,
+        Imdb
     }
 
     public interface IPerson

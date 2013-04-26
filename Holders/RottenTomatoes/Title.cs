@@ -19,6 +19,7 @@ namespace FlixSharp.Holders.RottenTomatoes
             Directors = new List<String>();
         }
         public String Id { get; set; }
+        public TitleSource Source { get { return TitleSource.RottenTomatoes; } }
 
         public String FullId { get { return Id; } }
         public String FullTitle { get; set; }
