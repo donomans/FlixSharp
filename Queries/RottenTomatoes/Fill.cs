@@ -36,7 +36,7 @@ namespace FlixSharp.Queries.RottenTomatoes
             Title t = new Title();
             t.Id = m.id;
             t.FullTitle = m.title;
-            t.Year = m.year;
+            t.Year = m.year != null && m.year.ToString() != "" ? m.year : 0;
             t.Rating = (MpaaRating)Enum.Parse(typeof(MpaaRating), m.mpaa_rating.ToString().Replace("-", ""));
             t.RunTime = m.runtime != null && m.runtime.ToString() != "" ? m.runtime : 0;
             t.CriticsConsensus = m.critics_consensus;
