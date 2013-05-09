@@ -19,20 +19,175 @@ namespace FlixSharp.Queries.RottenTomatoes
 
         internal static async Task<List<Title>> GetBaseTitleInfo(Task<JObject> json)
         {
-            dynamic dynjson = await json;
-            
+            //dynamic dynjson = await json;
+            var jojson = await json;
+            //List<Title> movies = new List<Title>();
+            //if (dynjson.movies != null)
+            //    foreach (var m in dynjson.movies)
+            //        movies.Add(FillTitleInfo(m));
+            //else
+            //    movies.Add(FillTitleInfo(dynjson));
+
             List<Title> movies = new List<Title>();
-            if (dynjson.movies != null)
-                foreach (var m in dynjson.movies)
+            if (jojson["movies"] != null)
+                foreach (JObject m in jojson["movies"])
                     movies.Add(FillTitleInfo(m));
             else
-                movies.Add(FillTitleInfo(dynjson));
-
+                movies.Add(FillTitleInfo(jojson));
+            
             return movies;
         }
-
-        private static Title FillTitleInfo(dynamic m)
+        private static Title FillTitleInfo(JObject m)
         {
+            //System.Diagnostics.Stopwatch s = new System.Diagnostics.Stopwatch();
+            //s.Start();
+            Title t = new Title();
+            t.Id = m["id"].ToString();
+            t.FullTitle = m["title"].ToString();
+            var year = m["year"];
+            t.Year = year.ToString() != "" ? (Int32)year : 0;
+            var mpaa_rating = m["mpaa_rating"].ToString().Replace("-", "");
+            t.Rating = (MpaaRating)Enum.Parse(typeof(MpaaRating), mpaa_rating);
+            var runtime = m["runtime"];
+            t.RunTime = runtime != null && runtime.ToString() != "" ? (Int32)runtime : 0;
+            //s.Stop();
+            //var em = s.ElapsedMilliseconds;
+            //s.Start();
+            var ratings = m["ratings"];
+            if (ratings != null)
+            {
+                var critics_score = ratings["critics_score"];
+                if (critics_score != null)
+                    t.Ratings.Add(new Rating()
+                    {
+                        Type = RottenRatingType.Critic,
+                        RottenTomatoRating = ratings["critics_rating"] != null ?
+                        (RottenRating)Enum.Parse(typeof(RottenRating), ratings["critics_rating"].ToString().Replace(" ", ""))
+                        : RottenRating.None,
+                        Score = (Int32)critics_score
+                    });
+                var audience_score = ratings["audience_score"];
+                if (audience_score != null)
+                    t.Ratings.Add(new Rating()
+                    {
+                        Type = RottenRatingType.Audience,
+                        RottenTomatoRating = ratings["audience_rating"] != null ?
+                        (RottenRating)Enum.Parse(typeof(RottenRating), ratings["audience_rating"].ToString().Replace(" ", ""))
+                        : RottenRating.None,
+                        Score = (Int32)audience_score
+                    });
+            }
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var release_dates = m["release_dates"];
+            if (release_dates != null)
+            {
+                if (release_dates["theater"] != null)
+                {
+                    t.ReleaseDates.Add(new ReleaseDate()
+                    {
+                        Date = (DateTime?)release_dates["theater"],//DateTime.Parse(m.release_dates.theater),
+                        ReleaseType = ReleaseDateType.Theater
+                    });
+                }
+                if (release_dates["dvd"] != null)
+                {
+                    t.ReleaseDates.Add(new ReleaseDate()
+                    {
+                        Date = (DateTime?)release_dates["dvd"],//DateTime.Parse(m.release_dates.dvd),
+                        ReleaseType = ReleaseDateType.DVD
+                    });
+                }
+            }
+            t.Synopsis = m["synopsis"].ToString();
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var alternate_ids = m["alternate_ids"];
+            if (alternate_ids != null)
+                t.AlternateIds.Add(new AlternateId()
+                {
+                    Id = (String)alternate_ids["imdb"],
+                    Type = AlternateIdType.Imdb
+                });
+            t.RottenTomatoesSiteUrl = m["links"] != null ? 
+                m["links"]["alternate"].ToString() 
+                : "";
+            t.Studio = (String)m["studio"];
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var posters = m["posters"];
+            if (posters != null)
+            {
+                if (posters["thumbnail"] != null)
+                    t.Posters.Add(new Poster()
+                    {
+                        Type = PosterType.Thumbnail,
+                        Url = posters["thumbnail"].ToString()
+                    });
+                if (posters["profile"] != null)
+                    t.Posters.Add(new Poster()
+                    {
+                        Type = PosterType.Profile,
+                        Url = posters["profile"].ToString()
+                    });
+                if (posters["detailed"] != null)
+                    t.Posters.Add(new Poster()
+                    {
+                        Type = PosterType.Detailed,
+                        Url = posters["detailed"].ToString()
+                    });
+                if (posters["original"] != null)
+                    t.Posters.Add(new Poster()
+                    {
+                        Type = PosterType.Original,
+                        Url = posters["original"].ToString()
+                    });
+            }
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var abridged_cast = m["abridged_cast"];
+            if (abridged_cast != null)
+            {
+                foreach (var actor in abridged_cast)
+                {
+                    t.Actors.Add(new Person()
+                    {
+                        Id = (String)actor["id"],
+                        Name = (String)actor["name"],
+                        Characters = actor["characters"] != null ?
+                        new List<String>((actor["characters"] as JArray).Select(j => j.ToString()))
+                        : new List<String>()
+                    });
+                }
+            }
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var abridged_directors = m["abridged_directors"];
+            if (abridged_directors != null)
+            {
+                foreach (var director in abridged_directors)
+                    t.Directors.Add((String)director["name"]);
+            }
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            //s.Start();
+            var genres = m["genres"];
+            if (genres != null)
+                t.Genres.AddRange((genres as JArray).Select(g => g.ToString()));
+            //s.Stop();
+            //em = s.ElapsedMilliseconds;
+            return t;
+        }
+        /*
+        private static Title FillTitleInfof(dynamic m)
+        {
+            System.Diagnostics.Stopwatch s = new System.Diagnostics.Stopwatch();
+            s.Start();
             Title t = new Title();
             t.Id = m.id;
             t.FullTitle = m.title;
@@ -40,6 +195,9 @@ namespace FlixSharp.Queries.RottenTomatoes
             t.Rating = (MpaaRating)Enum.Parse(typeof(MpaaRating), m.mpaa_rating.ToString().Replace("-", ""));
             t.RunTime = m.runtime != null && m.runtime.ToString() != "" ? m.runtime : 0;
             t.CriticsConsensus = m.critics_consensus;
+            s.Stop();
+            var em = s.ElapsedMilliseconds;
+            s.Start();
             if (m.ratings != null)
             {
                 if (m.ratings.critics_score != null)
@@ -61,6 +219,9 @@ namespace FlixSharp.Queries.RottenTomatoes
                         Score = m.ratings.audience_score
                     });
             }
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start(); 
             if (m.release_dates != null)
             {
                 if (m.release_dates.theater != null)
@@ -81,6 +242,9 @@ namespace FlixSharp.Queries.RottenTomatoes
                 }
             }
             t.Synopsis = m.synopsis;
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start(); 
             if (m.alternate_ids != null)
                 t.AlternateIds.Add(new AlternateId()
                 {
@@ -89,6 +253,9 @@ namespace FlixSharp.Queries.RottenTomatoes
                 });
             t.RottenTomatoesSiteUrl = m.links != null ? m.links.alternate : "";
             t.Studio = m.studio;
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start();
             if (m.posters != null)
             {
                 if (m.posters.thumbnail != null)
@@ -116,6 +283,9 @@ namespace FlixSharp.Queries.RottenTomatoes
                         Url = m.posters.original
                     });
             }
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start();
             if (m.abridged_cast != null)
             {
                 foreach (var actor in m.abridged_cast)
@@ -132,15 +302,24 @@ namespace FlixSharp.Queries.RottenTomatoes
                     });
                 }
             }
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start();
             if (m.abridged_directors != null)
             {
                 foreach (var director in m.abridged_directors)
                     t.Directors.Add(director.name.ToString());
             }
+            s.Stop();
+            em = s.ElapsedMilliseconds;
+            s.Start();
             if (m.genres != null)
                 t.Genres.AddRange((m.genres as JArray).Select(g => g.ToString()));
+            s.Stop();
+            em = s.ElapsedMilliseconds;
             return t;
         }
+        */
     }
     public class FillLists
     {
