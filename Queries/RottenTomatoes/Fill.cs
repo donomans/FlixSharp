@@ -27,6 +27,8 @@ namespace FlixSharp.Queries.RottenTomatoes
             //        movies.Add(FillTitleInfo(m));
             //else
             //    movies.Add(FillTitleInfo(dynjson));
+            if (jojson["error"] != null)
+                throw new RottenTomatoesApiException(jojson["error"].ToString());
 
             List<Title> movies = new List<Title>();
             if (jojson["movies"] != null)

@@ -269,4 +269,12 @@ namespace FlixSharp.Helpers.Async
         {
         }
     }
+
+    public class RottenTomatoesApiException : ApiException
+    {
+        public RottenTomatoesApiException(String Message)
+            : base(Message, new WebException("General API Exception"))
+        {
+        }
+    }
 }
